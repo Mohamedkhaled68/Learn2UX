@@ -1,10 +1,4 @@
-import { FC } from "react";
-
-type CategoryProps = {
-    params: { title: string };
-};
-
-const page: FC<CategoryProps> = ({ params }) => {
+const page = () => {
     return <div></div>;
 };
 
