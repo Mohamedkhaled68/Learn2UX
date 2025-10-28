@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import "./globals.css";
 
 export const metadata: Metadata = {
     title: "Learn2UX",
@@ -11,14 +11,16 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+type Params = Promise<{ lang: string }>;
+
 export default async function RootLayout({
     children,
     params,
 }: Readonly<{
     children: React.ReactNode;
-    params: Promise<{ lang: "en" | "ar" }>;
+    params: Params;
 }>) {
-    const { lang } = await params;
+    const { lang } = (await params) as { lang: "en" | "ar" };
 
     return (
         <html lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
