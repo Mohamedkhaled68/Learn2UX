@@ -1,0 +1,37 @@
+{
+    "cards": [
+        {
+            "title": "Getting Started",
+            "description": "Learn about how to make things"
+        },
+        {
+            "title": "Definitions",
+            "description": "Learn about how to make things"
+        },
+        {
+            "title": "Career Path",
+            "description": "Learn about how to make things"
+        },
+        {
+            "title": "Tools",
+            "description": "Learn about how to make things"
+        },
+        {
+            "title": "Learning",
+            "description": "Learn about how to make things"
+        },
+        {
+            "title": "Challenges",
+            "description": "Learn about how to make things"
+        },
+        {
+            "title": "Resources",
+            "description": "Learn about how to make things"
+        },
+        {
+            "title": "Finances",
+            "description": "Learn about how to make things"
+        }
+    ],
+    "sideNote" : "Want to help translate this site into your language? Join our community on Discord!"
+}

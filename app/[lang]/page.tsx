@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import CategoryHomeBtn from "./_components/CategoryHomeBtn";
 import { PiMapTrifoldLight } from "react-icons/pi";
 import { BsTranslate } from "react-icons/bs";
 import { LiaIdBadgeSolid } from "react-icons/lia";
@@ -8,7 +7,14 @@ import { FaRegLightbulb } from "react-icons/fa";
 import { CiWarning } from "react-icons/ci";
 import { ImBooks } from "react-icons/im";
 import { FaMoneyBills } from "react-icons/fa6";
-import Navbar from "./_components/Navbar";
+import Navbar from "@/components/Navbar";
+import CategoryHomeBtn from "@/components/CategoryHomeBtn";
+import { getDictionary } from "./dictionaries";
+
+// Disable caching for this page
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 type Props = {
     title: string;
     description: string;
@@ -112,38 +118,42 @@ const data: Props[] = [
     },
 ];
 
-export default function page() {
+export default async function page({
+    params,
+}: {
+    params: Promise<{ lang: "en" | "ar" }>;
+}) {
+    const { lang } = await params;
+    const dictionary = await getDictionary(lang);
+
     return (
         <>
             <Navbar />
             <div className="flex flex-col gap-4 ">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center">
-                    {data.map(
-                        ({
-                            title,
-                            description,
-                            answers,
-                            icon,
-                            theme,
-                            path,
-                        }) => (
+                    {data.map(({ icon, theme, path }, index) => {
+                        const card = dictionary.cards[index];
+                        if (!card) return null;
+
+                        return (
                             <CategoryHomeBtn
+                                lang={lang}
+                                key={index}
                                 icon={icon}
-                                key={title}
-                                title={title}
-                                description={description}
-                                answers={answers}
+                                title={card.title}
+                                description={card.description}
+                                answers={24}
                                 theme={theme}
                                 path={path}
                             />
-                        )
-                    )}
+                        );
+                    })}
                 </div>
+
                 <div className="rounded-md p-4 border-[1px] border-black flex flex-col gap-1">
-                    <h1 className="text-2xl font-bold">Side Note :</h1>
+                    <h1 className="text-2xl font-bold">{lang === "en" ? "Side Note" : "ملاحظة جانبية"} :</h1>
                     <p>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Maxime possimus asperiores aperiam excepturi, fuga sunt.
+                        {dictionary.sideNote}
                     </p>
                 </div>
             </div>

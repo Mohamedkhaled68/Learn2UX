@@ -5,21 +5,48 @@ import { HiOutlinePaintBrush } from "react-icons/hi2";
 import { GiLadybug } from "react-icons/gi";
 import Image from "next/image";
 import usFlag from "@/public/us-flag.png";
-// import {saFlag} from "/sa-flag.png";
+import saFlag from "@/public/sa-flag.png";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useRouter, usePathname } from "next/navigation";
+
 const LanguageLevelSelector = () => {
     const [selectedLevel, setSelectedLevel] = useState("Beginner");
+    const { lang } = useLanguage();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    const switchLanguage = () => {
+        const newLang = lang === "en" ? "ar" : "en";
+        // Replace the language in the current path
+        const newPath = pathname.replace(`/${lang}`, `/${newLang}`);
+        router.push(newPath);
+    };
 
     return (
         <div className="flex items-center gap-3 bg-white p-2 rounded-full shadow-md border">
             {/* Language Toggle */}
-            <button className="flex items-center gap-2 p-2 bg-gray-100 rounded-full border relative w-[30px] h-[30px]">
-                <Image
-                    src={usFlag}
-                    fill
-                    quality={100}
-                    alt="English"
-                    className="w-6 h-6 rounded-full"
-                />
+            <button
+                onClick={switchLanguage}
+                className="flex items-center gap-2 p-2 bg-gray-100 rounded-full border relative w-[30px] h-[30px] hover:bg-gray-200 transition-colors"
+                title={`Switch to ${lang === "en" ? "Arabic" : "English"}`}
+            >
+                {lang === "en" ? (
+                    <Image
+                        src={usFlag}
+                        fill
+                        quality={100}
+                        alt={"English"}
+                        className="w-6 h-6 rounded-full"
+                    />
+                ) : (
+                    <Image
+                        src={saFlag}
+                        fill
+                        quality={100}
+                        alt={"Arabic"}
+                        className="w-6 h-6 rounded-full"
+                    />
+                )}
             </button>
 
             {/* Divider */}
@@ -34,7 +61,7 @@ const LanguageLevelSelector = () => {
                     onClick={() => setSelectedLevel("Pro")}
                 >
                     <HiOutlinePaintBrush size={16} />
-                    Pro
+                    {lang === "en" ? "Pro" : "محترف"}
                 </button>
 
                 <span className="text-gray-400">|</span>
@@ -48,7 +75,7 @@ const LanguageLevelSelector = () => {
                     onClick={() => setSelectedLevel("Beginner")}
                 >
                     <GiLadybug size={16} />
-                    Beginner
+                    {lang === "en" ? "Beginner" : "مبتدئ"}
                 </button>
             </div>
         </div>

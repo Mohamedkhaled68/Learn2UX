@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { ReactNode } from "react";
-import { FaArrowRightLong } from "react-icons/fa6";
+import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { motion } from "framer-motion";
 
 type Props = {
@@ -14,6 +14,7 @@ type Props = {
         text: string;
     };
     path: string;
+    lang: "en" | "ar";
 };
 const CategoryHomeBtn = ({
     title,
@@ -22,10 +23,12 @@ const CategoryHomeBtn = ({
     icon,
     theme,
     path,
+    lang
 }: Props) => {
     return (
         <motion.div
             initial={{ opacity: 0, scale: 1 }}
+            animate={{ opacity: 1 }}
             whileInView={{ opacity: 1 }}
             whileHover={{ scale: 1.03 }}
             transition={{ duration: 0.3 }}
@@ -37,8 +40,13 @@ const CategoryHomeBtn = ({
         >
             <div className="flex items-center justify-between w-full">
                 {icon}
-                <Link className="rounded-full hover:bg-slate-300 p-2 duration-300 cursor-pointer" href={path}>
-                    <FaArrowRightLong style={{ color: theme.text }} size={25} />
+                <Link
+                    className="rounded-full hover:bg-slate-300 p-2 duration-300 cursor-pointer"
+                    href={path}
+                >
+                    {
+                        lang === "en" ? <FaArrowRightLong style={{ color: theme.text }} size={25} /> : <FaArrowLeftLong style={{ color: theme.text }} size={25} />
+                    }
                 </Link>
             </div>
             <div className="flex flex-col gap-1">
@@ -51,7 +59,9 @@ const CategoryHomeBtn = ({
                 <p style={{ color: theme.text }}>{description}</p>
             </div>
             <div className="w-fit p-1 border-t-[1px] border-black">
-                {answers} answers
+                {answers} {
+                        lang === "en" ? "answers" : "إجابة"
+                    }
             </div>
         </motion.div>
     );
