@@ -13,6 +13,7 @@ interface Category {
     titleAr: string;
     descriptionEn: string;
     descriptionAr: string;
+    questionNumber: number;
     textColor: string;
     borderColor: string;
     icon: string;
@@ -85,7 +86,7 @@ export default async function page({
                                         ? category.descriptionEn
                                         : category.descriptionAr
                                 }
-                                answers={0}
+                                answers={category.questionNumber}
                                 theme={{
                                     bg: category.borderColor,
                                     text: category.textColor,

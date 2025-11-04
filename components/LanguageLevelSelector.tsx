@@ -44,19 +44,6 @@ const LanguageLevelSelector = () => {
                     />
                 )}
             </button>
-
-            {/* Divider */}
-            <span className="h-6 w-px bg-gray-300"></span>
-
-            {/* Admin Buttons */}
-            <div className="flex items-center gap-2">
-                <button
-                    onClick={() => router.push(`/${lang}/admin/login`)}
-                    className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition-colors font-medium text-sm"
-                >
-                    {lang === "en" ? "Admin Login" : "دخول المشرف"}
-                </button>
-            </div>
         </div>
     );
 };

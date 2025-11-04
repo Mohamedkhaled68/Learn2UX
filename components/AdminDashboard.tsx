@@ -5,9 +5,14 @@ import { useRouter } from "next/navigation";
 import AddCategory from "@/components/AddCategory";
 import AddQuestion from "@/components/AddQuestion";
 import ManageCategories from "@/components/ManageCategories";
+import ManageQuestions from "@/components/ManageQuestions";
 import Cookies from "js-cookie";
 
-type TabType = "addCategory" | "manageCategories" | "question";
+type TabType =
+    | "addCategory"
+    | "manageCategories"
+    | "addQuestion"
+    | "manageQuestions";
 
 const AdminDashboard: React.FC = () => {
     const router = useRouter();
@@ -121,9 +126,34 @@ const AdminDashboard: React.FC = () => {
                                 </div>
                             </button>
                             <button
-                                onClick={() => setActiveTab("question")}
+                                onClick={() => setActiveTab("addQuestion")}
                                 className={`px-8 py-4 text-sm font-medium border-b-2 transition-colors ${
-                                    activeTab === "question"
+                                    activeTab === "addQuestion"
+                                        ? "border-indigo-600 text-indigo-600"
+                                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                                }`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <svg
+                                        className="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M12 4v16m8-8H4"
+                                        />
+                                    </svg>
+                                    Add Question
+                                </div>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab("manageQuestions")}
+                                className={`px-8 py-4 text-sm font-medium border-b-2 transition-colors ${
+                                    activeTab === "manageQuestions"
                                         ? "border-indigo-600 text-indigo-600"
                                         : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                                 }`}
@@ -142,7 +172,7 @@ const AdminDashboard: React.FC = () => {
                                             d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                         />
                                     </svg>
-                                    Add Question
+                                    Manage Questions
                                 </div>
                             </button>
                         </nav>
@@ -153,7 +183,8 @@ const AdminDashboard: React.FC = () => {
                 <div className="transition-all duration-300">
                     {activeTab === "addCategory" && <AddCategory />}
                     {activeTab === "manageCategories" && <ManageCategories />}
-                    {activeTab === "question" && <AddQuestion />}
+                    {activeTab === "addQuestion" && <AddQuestion />}
+                    {activeTab === "manageQuestions" && <ManageQuestions />}
                 </div>
             </main>
 
