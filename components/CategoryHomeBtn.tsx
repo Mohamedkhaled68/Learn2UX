@@ -52,7 +52,7 @@ const CategoryHomeBtn = ({
                 border: `1px solid ${withAlpha(theme.bg, 0.5)}`,
                 boxShadow: `0 0px 10px 1px ${withAlpha(theme.bg, 0.4)}`,
             }}
-            className={`min-w-[290px] p-4 rounded-[0.5rem] flex flex-col gap-2 bg-white select-none`}
+            className={`min-w-[290px] max-h-fit p-4 rounded-[0.5rem] flex flex-col gap-2 bg-white select-none`}
         >
             <div className="flex items-center justify-between w-full">
                 {icon}

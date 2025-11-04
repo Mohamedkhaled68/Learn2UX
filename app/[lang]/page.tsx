@@ -54,60 +54,65 @@ export default async function page({
 
     return (
         <>
-            <Navbar />
-            <div className="flex flex-col gap-[2rem] pt-[1rem]">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-8 justify-items-center">
-                    {categories.length > 0 ? (
-                        categories.map((category) => (
-                            <CategoryHomeBtn
-                                lang={lang}
-                                key={category._id}
-                                icon={
-                                    <Image
-                                        src={category.icon}
-                                        alt={
-                                            lang === "en"
-                                                ? category.titleEn
-                                                : category.titleAr
-                                        }
-                                        width={25}
-                                        height={25}
-                                        className="object-contain"
-                                        unoptimized
-                                    />
-                                }
-                                title={
-                                    lang === "en"
-                                        ? category.titleEn
-                                        : category.titleAr
-                                }
-                                description={
-                                    lang === "en"
-                                        ? category.descriptionEn
-                                        : category.descriptionAr
-                                }
-                                answers={category.questionNumber}
-                                theme={{
-                                    bg: category.borderColor,
-                                    text: category.textColor,
-                                }}
-                                path={`/${lang}/${category._id}`}
-                            />
-                        ))
-                    ) : (
-                        <div className="col-span-full text-center py-8 text-gray-500">
-                            {lang === "en"
-                                ? "No categories available yet."
-                                : "لا توجد فئات متاحة بعد."}
-                        </div>
-                    )}
+            <div className="h-screen flex flex-col pb-3 gap-[2rem] ">
+                <Navbar />
+                <div className="grow">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-8 justify-items-stretch">
+                        {categories.length > 0 ? (
+                            categories.map((category) => (
+                                <CategoryHomeBtn
+                                    lang={lang}
+                                    key={category._id}
+                                    icon={
+                                        <Image
+                                            src={category.icon}
+                                            alt={
+                                                lang === "en"
+                                                    ? category.titleEn
+                                                    : category.titleAr
+                                            }
+                                            width={25}
+                                            height={25}
+                                            className="object-contain"
+                                            unoptimized
+                                        />
+                                    }
+                                    title={
+                                        lang === "en"
+                                            ? category.titleEn
+                                            : category.titleAr
+                                    }
+                                    description={
+                                        lang === "en"
+                                            ? category.descriptionEn
+                                            : category.descriptionAr
+                                    }
+                                    answers={category.questionNumber}
+                                    theme={{
+                                        bg: category.borderColor,
+                                        text: category.textColor,
+                                    }}
+                                    path={`/${lang}/${category._id}`}
+                                />
+                            ))
+                        ) : (
+                            <div className="col-span-full text-center py-8 text-gray-500">
+                                {lang === "en"
+                                    ? "No categories available yet."
+                                    : "لا توجد فئات متاحة بعد."}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                <div className="rounded-md p-4 border-[1px] border-black flex flex-col gap-1">
+                <div
+                    style={{ border: `1px solid rgba(54, 54, 54, 0.40)` }}
+                    className="rounded-[0.5rem] p-4 flex flex-col gap-1 justify-self-end"
+                >
                     <h1 className="text-2xl font-bold">
                         {lang === "en" ? "Side Note" : "ملاحظة جانبية"} :
                     </h1>
-                    <p>{dictionary.sideNote}</p>
+                    <p className="text-[#363636]">{dictionary.sideNote}</p>
                 </div>
             </div>
         </>
