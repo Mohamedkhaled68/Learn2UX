@@ -24,7 +24,32 @@ const LanguageLevelSelector = () => {
             <button
                 onClick={switchLanguage}
                 className="cursor-pointer flex items-center gap-2 p-2 bg-gray-100 rounded-full border relative w-[30px] h-[30px] hover:bg-gray-200 transition-colors"
-                title={`Switch to ${lang === "en" ? "Arabic" : "English"}`}
+                title={`Switch to Arabic`}
+            >
+                {lang === "en" ? (
+                    <Image
+                        src={saFlag}
+                        fill
+                        quality={100}
+                        alt={"Arabic"}
+                        className="w-6 h-6 rounded-full  grayscale-100"
+                    />
+                ) : (
+                    <Image
+                        src={saFlag}
+                        fill
+                        quality={100}
+                        alt={"Arabic"}
+                        className="w-6 h-6 rounded-full"
+                    />
+                )}
+            </button>
+
+            <span className="border border-l-[1px] border-black h-4 opacity-50" />
+            <button
+                onClick={switchLanguage}
+                className="cursor-pointer flex items-center gap-2 p-2 bg-gray-100 rounded-full border relative w-[30px] h-[30px] hover:bg-gray-200 transition-colors"
+                title={`Switch to English`}
             >
                 {lang === "en" ? (
                     <Image
@@ -36,11 +61,11 @@ const LanguageLevelSelector = () => {
                     />
                 ) : (
                     <Image
-                        src={saFlag}
+                        src={usFlag}
                         fill
                         quality={100}
-                        alt={"Arabic"}
-                        className="w-6 h-6 rounded-full"
+                        alt={"English"}
+                        className="w-6 h-6 rounded-full grayscale-100"
                     />
                 )}
             </button>

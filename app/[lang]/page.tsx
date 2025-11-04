@@ -55,8 +55,8 @@ export default async function page({
     return (
         <>
             <Navbar />
-            <div className="flex flex-col gap-4 ">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center">
+            <div className="flex flex-col gap-[2rem] pt-[1rem]">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-8 justify-items-center">
                     {categories.length > 0 ? (
                         categories.map((category) => (
                             <CategoryHomeBtn
