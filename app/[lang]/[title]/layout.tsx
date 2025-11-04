@@ -7,7 +7,6 @@ export default function RootLayout({
 }>) {
     return (
         <div className="container mx-auto p-8">
-            <SearchBar />
             {children}
         </div>
     );

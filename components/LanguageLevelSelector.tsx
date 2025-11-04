@@ -1,8 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { HiOutlinePaintBrush } from "react-icons/hi2";
-import { GiLadybug } from "react-icons/gi";
 import Image from "next/image";
 import usFlag from "@/public/us-flag.png";
 import saFlag from "@/public/sa-flag.png";
@@ -10,7 +7,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useRouter, usePathname } from "next/navigation";
 
 const LanguageLevelSelector = () => {
-    const [selectedLevel, setSelectedLevel] = useState("Beginner");
     const { lang } = useLanguage();
     const router = useRouter();
     const pathname = usePathname();
@@ -27,7 +23,7 @@ const LanguageLevelSelector = () => {
             {/* Language Toggle */}
             <button
                 onClick={switchLanguage}
-                className="flex items-center gap-2 p-2 bg-gray-100 rounded-full border relative w-[30px] h-[30px] hover:bg-gray-200 transition-colors"
+                className="cursor-pointer flex items-center gap-2 p-2 bg-gray-100 rounded-full border relative w-[30px] h-[30px] hover:bg-gray-200 transition-colors"
                 title={`Switch to ${lang === "en" ? "Arabic" : "English"}`}
             >
                 {lang === "en" ? (
@@ -52,30 +48,13 @@ const LanguageLevelSelector = () => {
             {/* Divider */}
             <span className="h-6 w-px bg-gray-300"></span>
 
-            {/* Level Selector */}
-            <div className="flex items-center gap-3 bg-gray-100 px-4 py-2 rounded-full border">
+            {/* Admin Buttons */}
+            <div className="flex items-center gap-2">
                 <button
-                    className={`flex items-center gap-1 text-gray-500 ${
-                        selectedLevel === "Pro" ? "font-bold text-black" : ""
-                    }`}
-                    onClick={() => setSelectedLevel("Pro")}
+                    onClick={() => router.push(`/${lang}/admin/login`)}
+                    className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition-colors font-medium text-sm"
                 >
-                    <HiOutlinePaintBrush size={16} />
-                    {lang === "en" ? "Pro" : "محترف"}
-                </button>
-
-                <span className="text-gray-400">|</span>
-
-                <button
-                    className={`flex items-center gap-1 ${
-                        selectedLevel === "Beginner"
-                            ? "font-bold text-black"
-                            : "text-gray-500"
-                    }`}
-                    onClick={() => setSelectedLevel("Beginner")}
-                >
-                    <GiLadybug size={16} />
-                    {lang === "en" ? "Beginner" : "مبتدئ"}
+                    {lang === "en" ? "Admin Login" : "دخول المشرف"}
                 </button>
             </div>
         </div>

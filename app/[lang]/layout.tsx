@@ -32,7 +32,10 @@ export default async function RootLayout({
                     sizes="any"
                 />
             </head>
-            <body className="bg-[#FDFDFD] min-h-screen w-full relative flex flex-col">
+            <body
+                suppressHydrationWarning
+                className="bg-[#FDFDFD] min-h-screen w-full relative flex flex-col"
+            >
                 <LanguageProvider lang={lang}>
                     <main className="flex-1">
                         <div className="container mx-auto">{children}</div>
