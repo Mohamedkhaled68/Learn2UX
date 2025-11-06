@@ -49,13 +49,14 @@ const CategoryHomeBtn = ({
             whileHover={{ scale: 1.03 }}
             transition={{ duration: 0.3 }}
             style={{
-                border: `1px solid ${withAlpha(theme.bg, 0.5)}`,
-                boxShadow: `0 0px 10px 1px ${withAlpha(theme.bg, 0.4)}`,
+                border: `1px solid ${withAlpha(theme.bg, 0.4)}`,
+                boxShadow: `0 0px 10px 1px ${withAlpha(theme.bg, 0.2)}`,
             }}
-            className={`min-w-[290px] max-h-fit p-4 rounded-[0.5rem] flex flex-col gap-2 bg-white select-none`}
+            className={`max-w-full 2xl:w-[350px] p-4 2xl:p-[30px] rounded-[16px] flex flex-col gap-2 2xl:gap-[15px] bg-white select-none`}
         >
             <div className="flex items-center justify-between w-full">
                 {icon}
+
                 <Link
                     className="rounded-full hover:bg-slate-300 p-2 duration-300 cursor-pointer"
                     href={path}
@@ -73,27 +74,31 @@ const CategoryHomeBtn = ({
                     )}
                 </Link>
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 2xl:gap-[5px]">
                 <h1
                     style={{ color: theme.text }}
-                    className="text-2xl font-ramillas italic font-bold"
+                    className="text-2xl 2xl:text-[35px] font-ramillas italic font-extrabold"
                 >
                     {title}
                 </h1>
-                <p style={{ color: theme.text }}>{description}</p>
+                <p
+                    className="font-raleway 2xl:text-[20px]"
+                    style={{ color: theme.text }}
+                >
+                    {description}
+                </p>
             </div>
+            <span
+                style={{
+                    border: `1px solid ${withAlpha(theme.text, 0.5)}`,
+                }}
+                className={`w-[15%]`}
+            />
             <div
                 style={{
                     color: theme.text,
                 }}
-                className="w-fit flex flex-col"
             >
-                <span
-                    style={{
-                        border: `1px solid ${withAlpha(theme.text, 0.5)}`,
-                    }}
-                    className={`w-[50%]`}
-                />
                 {answers} {lang === "en" ? "answers" : "إجابة"}
             </div>
         </motion.div>
