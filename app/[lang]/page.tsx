@@ -105,7 +105,9 @@ export default async function page({
 
                 <div
                     style={{ border: `1px solid rgba(54, 54, 54, 0.40)` }}
-                    className="rounded-[20px] p-6 flex flex-col gap-2"
+                    className={`rounded-[20px] p-6 flex flex-col gap-2 ${
+                        lang === "ar" ? "font-noto" : ""
+                    }`}
                 >
                     <h1 className="text-2xl font-bold 2xl:text-[36px]">
                         {lang === "en" ? "Side Note" : "ملاحظة جانبية"} :

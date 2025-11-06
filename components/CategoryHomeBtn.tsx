@@ -52,7 +52,9 @@ const CategoryHomeBtn = ({
                 border: `1px solid ${withAlpha(theme.bg, 0.4)}`,
                 boxShadow: `0 0px 10px 1px ${withAlpha(theme.bg, 0.2)}`,
             }}
-            className={`max-w-full 2xl:w-[350px] p-4 2xl:p-[30px] rounded-[16px] flex flex-col gap-2 2xl:gap-[15px] bg-white select-none`}
+            className={`max-w-full 2xl:w-[350px] p-4 2xl:p-[30px] rounded-[16px] flex flex-col gap-2 2xl:gap-[15px] bg-white select-none ${
+                lang === "ar" ? "font-noto" : ""
+            }`}
         >
             <div className="flex items-center justify-between w-full">
                 {icon}
@@ -77,12 +79,16 @@ const CategoryHomeBtn = ({
             <div className="flex flex-col gap-1 2xl:gap-[5px]">
                 <h1
                     style={{ color: theme.text }}
-                    className="text-2xl 2xl:text-[35px] font-ramillas italic font-extrabold"
+                    className={`text-2xl 2xl:text-[35px] ${
+                        lang === "ar" ? "font-noto" : "italic font-ramillas"
+                    } font-extrabold`}
                 >
                     {title}
                 </h1>
                 <p
-                    className="font-raleway 2xl:text-[20px]"
+                    className={`${
+                        lang === "ar" ? "font-noto" : "font-raleway "
+                    } text-[15px] 2xl:text-[20px]`}
                     style={{ color: theme.text }}
                 >
                     {description}

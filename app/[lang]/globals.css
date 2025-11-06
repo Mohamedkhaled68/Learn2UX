@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@font-face {
+    font-family: "Raleway";
+    src: url("/fonts/raleway.ttf") format("truetype");
+}
+@font-face {
+    font-family: "Noto Sans Arabic";
+    src: url("/fonts/noto.ttf") format("truetype");
+}
+
 @theme {
     --font-ramillas: "TT Ramillas Trl";
     --font-raleway: "Raleway";
