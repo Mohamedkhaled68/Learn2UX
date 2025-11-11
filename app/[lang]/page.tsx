@@ -109,10 +109,10 @@ export default async function page({
                         lang === "ar" ? "font-noto" : ""
                     }`}
                 >
-                    <h1 className="text-2xl font-bold 2xl:text-[36px]">
+                    <h1 className="text-2xl font-bold 2xl:text-[36px] text-[#363636]">
                         {lang === "en" ? "Side Note" : "ملاحظة جانبية"} :
                     </h1>
-                    <p className="text-[#363636] text-[14px] 2xl:text-[20px]">
+                    <p className="text-[#363636] text-[14px] 2xl:text-[18px]">
                         {dictionary.sideNote}
                     </p>
                 </div>

@@ -60,7 +60,7 @@ const QuestionAccordion: React.FC<QuestionAccordionProps> = ({
 
             {/* Answer Content - Collapsible */}
             <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                className={`overflow-hidden transition-all duration-300 ease ${
                     isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
                 }`}
             >

@@ -19,11 +19,11 @@ const LanguageLevelSelector = () => {
     };
 
     return (
-        <div className="flex items-center gap-3 bg-white p-2 rounded-full shadow-md border">
+        <div className="flex items-center gap-[16px] bg-white py-[12px] px-[16px] rounded-full shadow-md border border-[#8B8B8B80]/50">
             {/* Language Toggle */}
             <button
                 onClick={switchLanguage}
-                className="cursor-pointer flex items-center gap-2 p-2 bg-gray-100 rounded-full border relative w-[30px] h-[30px] hover:bg-gray-200 transition-colors"
+                className="cursor-pointer flex items-center gap-2 p-2 bg-gray-100 rounded-full border border-[#363636] relative w-[22px] h-[22px] hover:bg-gray-200 transition-colors"
                 title={`Switch to Arabic`}
             >
                 {lang === "en" ? (
@@ -45,10 +45,11 @@ const LanguageLevelSelector = () => {
                 )}
             </button>
 
-            <span className="border border-l-[1px] border-black h-4 opacity-50" />
+            <span className="border border-l-[1.5px] border-[#8B8B8B80]/50 h-4 rounded-[14px]" />
+
             <button
                 onClick={switchLanguage}
-                className="cursor-pointer flex items-center gap-2 p-2 bg-gray-100 rounded-full border relative w-[30px] h-[30px] hover:bg-gray-200 transition-colors"
+                className="cursor-pointer flex items-center gap-2 p-2 bg-gray-100 rounded-full border border-[#363636] relative w-[22px] h-[22px] hover:bg-gray-200 transition-colors"
                 title={`Switch to English`}
             >
                 {lang === "en" ? (

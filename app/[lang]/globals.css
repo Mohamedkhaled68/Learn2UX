@@ -9,8 +9,20 @@
     src: url("/fonts/noto.ttf") format("truetype");
 }
 
+
 @theme {
     --font-ramillas: "TT Ramillas Trl";
     --font-raleway: "Raleway";
     --font-noto: "Noto Sans Arabic";
+}
+
+@media (max-width: 1900px) {
+    .arrows {
+        font-size: 25px;
+    }
+}
+@media (min-width: 1900px) {
+    .arrows {
+        font-size: 30px;
+    }
 }

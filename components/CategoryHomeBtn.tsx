@@ -41,16 +41,17 @@ const CategoryHomeBtn = ({
     path,
     lang,
 }: Props) => {
+    // iconwidth = 75
     return (
         <motion.div
             initial={{ opacity: 0, scale: 1 }}
             animate={{ opacity: 1 }}
             whileInView={{ opacity: 1 }}
-            whileHover={{ scale: 1.03 }}
+            whileHover={{ scale: 1.01 }}
             transition={{ duration: 0.3 }}
             style={{
                 border: `1px solid ${withAlpha(theme.bg, 0.4)}`,
-                boxShadow: `0 0px 10px 1px ${withAlpha(theme.bg, 0.2)}`,
+                boxShadow: `0 0px 8px 1px ${withAlpha(theme.bg, 0.15)}`,
             }}
             className={`max-w-full 2xl:w-[350px] p-4 2xl:p-[30px] rounded-[16px] flex flex-col gap-2 2xl:gap-[15px] bg-white select-none ${
                 lang === "ar" ? "font-noto" : ""
@@ -66,12 +67,12 @@ const CategoryHomeBtn = ({
                     {lang === "en" ? (
                         <FaArrowRightLong
                             style={{ color: theme.text }}
-                            size={25}
+                            className="arrows"
                         />
                     ) : (
                         <FaArrowLeftLong
                             style={{ color: theme.text }}
-                            size={25}
+                            className="arrows"
                         />
                     )}
                 </Link>
@@ -88,7 +89,7 @@ const CategoryHomeBtn = ({
                 <p
                     className={`${
                         lang === "ar" ? "font-noto" : "font-raleway "
-                    } text-[15px] 2xl:text-[20px]`}
+                    } text-[15px] 2xl:text-[18px]`}
                     style={{ color: theme.text }}
                 >
                     {description}
@@ -104,8 +105,10 @@ const CategoryHomeBtn = ({
                 style={{
                     color: theme.text,
                 }}
+                className="2xl:text-[22px]"
             >
-                {answers} {lang === "en" ? "answers" : "إجابة"}
+                <span className="font-ramillas font-bold">{answers}</span>{" "}
+                {lang === "en" ? "answers" : "إجابة"}
             </div>
         </motion.div>
     );
