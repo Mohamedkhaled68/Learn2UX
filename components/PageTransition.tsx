@@ -28,9 +28,11 @@ const variants = {
 
 export default function PageTransition({ children }: PageTransitionProps) {
     const pathname = usePathname();
+    console.log(pathname);
+    console.log("route changed");
 
     return (
-        <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence initial={false}>
             <motion.div
                 key={pathname}
                 variants={variants}
@@ -40,9 +42,10 @@ export default function PageTransition({ children }: PageTransitionProps) {
                 transition={{
                     type: "spring",
                     stiffness: 100,
-                    damping: 20,
+                    damping: 10,
                     duration: 0.5,
                 }}
+                className="absolute w-full h-full"
             >
                 {children}
             </motion.div>

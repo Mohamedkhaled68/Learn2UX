@@ -39,7 +39,7 @@ export default async function RootLayout({
             >
                 <LanguageProvider lang={lang}>
                     <main className="flex-1">
-                        <div className="container mx-auto">
+                        <div className="container mx-auto relative">
                             <PageTransition>{children}</PageTransition>
                         </div>
                     </main>
