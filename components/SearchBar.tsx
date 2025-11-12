@@ -20,7 +20,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     lang = "en",
 }) => {
     return (
-        <div className="grid grid-cols-5 items-center w-full">
+        <div className="flex items-center justify-between w-full">
             {/* Left: Back Arrow */}
             {lang === "ar" ? (
                 <Link href={`/${lang}`}>
@@ -33,7 +33,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             )}
 
             {/* Search Input */}
-            <div className="col-span-3 flex items-center flex-grow mx-4 bg-white rounded-full px-4 py-2 border border-black/20 shadow">
+            {/* <div className="col-span-3 flex items-center flex-grow mx-4 bg-white rounded-full px-4 py-2 border border-black/20 shadow">
                 <FaSearch className="text-gray-400" />
                 <input
                     type="text"
@@ -44,7 +44,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                     }
                     className="w-full border-none outline-none px-2 text-gray-700 bg-transparent"
                 />
-            </div>
+            </div> */}
 
             {/* Right: Category Name with Icon */}
             <div className="flex items-center font-semibold justify-self-end">

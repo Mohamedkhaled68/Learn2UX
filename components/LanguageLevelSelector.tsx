@@ -23,7 +23,7 @@ const LanguageLevelSelector = () => {
             {/* Language Toggle */}
             <button
                 onClick={switchLanguage}
-                className="cursor-pointer flex items-center gap-2 p-2 bg-gray-100 rounded-full border border-[#363636] relative w-[22px] h-[22px] hover:bg-gray-200 transition-colors"
+                className="cursor-pointer flex items-center gap-2 p-2 bg-gray-100 rounded-full border border-[#363636] relative w-[24px] h-[24px] hover:bg-gray-200 transition-colors"
                 title={`Switch to Arabic`}
             >
                 {lang === "en" ? (
@@ -49,7 +49,7 @@ const LanguageLevelSelector = () => {
 
             <button
                 onClick={switchLanguage}
-                className="cursor-pointer flex items-center gap-2 p-2 bg-gray-100 rounded-full border border-[#363636] relative w-[22px] h-[22px] hover:bg-gray-200 transition-colors"
+                className="cursor-pointer flex items-center gap-2 p-2 bg-gray-100 rounded-full border border-[#363636] relative w-[24px] h-[24px] hover:bg-gray-200 transition-colors"
                 title={`Switch to English`}
             >
                 {lang === "en" ? (

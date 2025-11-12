@@ -52,6 +52,21 @@ export default async function page({
     const dictionary = await getDictionary(lang);
     const categories = await getCategories();
 
+    const withAlpha = (color: string, alpha: number) => {
+        if (color.startsWith("#")) {
+            return `${color}${Math.round(alpha * 255)
+                .toString(16)
+                .padStart(2, "0")}`;
+        }
+
+        const nums = color.match(/\d+/g);
+        if (!nums || nums.length < 3) {
+            // fallback to black if the color string doesn't contain RGB values
+            return `rgba(0, 0, 0, ${alpha})`;
+        }
+
+        return `rgba(${nums.slice(0, 3).join(", ")}, ${alpha})`;
+    };
     return (
         <>
             <div className="min-h-screen xl:max-h-screen flex flex-col justify-between py-4 lg:py-4 gap-7 xl:gap-4 px-4 lg:px-0 lg:gap-0">
@@ -104,15 +119,21 @@ export default async function page({
                 </div>
 
                 <div
-                    style={{ border: `1px solid rgba(54, 54, 54, 0.40)` }}
+                    style={{
+                        border: `1px solid rgba(54, 54, 54, 0.40)`,
+                        boxShadow: `0 0px 8px 1px ${withAlpha(
+                            "#363636",
+                            0.15
+                        )}`,
+                    }}
                     className={`rounded-[20px] p-6 flex flex-col gap-2 mb-5 ${
                         lang === "ar" ? "font-noto" : ""
                     }`}
                 >
-                    <h1 className="text-2xl font-bold 2xl:text-[28px] text-[#363636]">
+                    <h1 className="text-2xl font-bold 2xl:text-[28px] text-[#363636] ">
                         {lang === "en" ? "Side Note" : "ملاحظة جانبية"} :
                     </h1>
-                    <p className="text-[#363636] text-[14px] 2xl:text-[18px]">
+                    <p className="text-[#363636] opacity-70 text-[14px] 2xl:text-[18px]">
                         {dictionary.sideNote}
                     </p>
                 </div>
