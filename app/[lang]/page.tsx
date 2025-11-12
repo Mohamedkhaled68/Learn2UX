@@ -69,9 +69,9 @@ export default async function page({
     };
     return (
         <>
-            <div className="min-h-screen xl:max-h-screen flex flex-col justify-between py-4 lg:py-4 gap-7 xl:gap-4 px-4 lg:px-0 lg:gap-0">
+            <div className="min-h-screen xl:max-h-screen flex flex-col justify-around py-2 px-4 lg:px-0 gap-7 lg:gap-0">
                 <Navbar />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 2xl:gap-y-12 justify-items-stretch">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 2xl:gap-8 justify-items-stretch">
                     {categories.length > 0 ? (
                         categories.map((category) => (
                             <CategoryHomeBtn
@@ -85,9 +85,9 @@ export default async function page({
                                                 ? category.titleEn
                                                 : category.titleAr
                                         }
-                                        width={25}
-                                        height={25}
-                                        className="object-contain"
+                                        width={35}
+                                        height={35}
+                                        className="object-contain w-[25px] h-[25px] 2xl:w-[35px] 2xl:h-[35px]"
                                         unoptimized
                                     />
                                 }
@@ -126,7 +126,7 @@ export default async function page({
                             0.15
                         )}`,
                     }}
-                    className={`rounded-[20px] p-6 flex flex-col gap-2 mb-5 ${
+                    className={`rounded-[20px] p-6 flex flex-col gap-2 mb-5 lg:mb-0 ${
                         lang === "ar" ? "font-noto" : ""
                     }`}
                 >

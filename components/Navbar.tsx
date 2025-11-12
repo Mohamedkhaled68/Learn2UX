@@ -3,7 +3,7 @@ import LanguageLevelSelector from "./LanguageLevelSelector";
 
 const Navbar = () => {
     return (
-        <nav className="w-full 2xl:h-[150px] flex justify-center items-center">
+        <nav className="w-full flex justify-center items-center">
             <div className="container mx-auto flex flex-col-reverse gap-7 lg:flex-row items-center justify-between">
                 <div
                     style={{

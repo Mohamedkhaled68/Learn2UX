@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import PageTransition from "@/components/PageTransition";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -38,7 +39,9 @@ export default async function RootLayout({
             >
                 <LanguageProvider lang={lang}>
                     <main className="flex-1">
-                        <div className="container mx-auto">{children}</div>
+                        <div className="container mx-auto">
+                            <PageTransition>{children}</PageTransition>
+                        </div>
                     </main>
                 </LanguageProvider>
             </body>
