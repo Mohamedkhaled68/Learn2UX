@@ -118,7 +118,7 @@ export default async function page({
                     lang={lang}
                 />
             </div>
-            <div className="max-w-8xl mx-auto px-4 py-8">
+            <div className="w-full mx-auto xl:px-4 py-8">
                 {/* Questions List */}
                 {categoryQuestions.length > 0 ? (
                     <div className="space-y-4">

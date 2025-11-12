@@ -39,8 +39,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
                     type="text"
                     placeholder={
                         lang === "en"
-                            ? "Search for what you need"
-                            : "ابحث عن ما تحتاج"
+                            ? "Search"
+                            : "إبحث"
                     }
                     className="w-full border-none outline-none px-2 text-gray-700 bg-transparent"
                 />

@@ -53,7 +53,7 @@ const CategoryHomeBtn = ({
                 border: `1px solid ${withAlpha(theme.bg, 0.4)}`,
                 boxShadow: `0 0px 8px 1px ${withAlpha(theme.bg, 0.15)}`,
             }}
-            className={`max-w-full 2xl:w-[350px] p-4 2xl:p-[30px] rounded-[16px] flex flex-col gap-2 2xl:gap-[15px] bg-white select-none ${
+            className={`w-full p-4 2xl:p-[30px] rounded-[16px] flex flex-col gap-2 2xl:gap-[15px] bg-white select-none ${
                 lang === "ar" ? "font-noto" : ""
             }`}
         >

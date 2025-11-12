@@ -4,7 +4,7 @@ import LanguageLevelSelector from "./LanguageLevelSelector";
 const Navbar = () => {
     return (
         <nav className="w-full 2xl:h-[150px] flex justify-center items-center">
-            <div className="container mx-auto flex flex-col gap-3 lg:flex-row items-center justify-between">
+            <div className="container mx-auto flex flex-col-reverse gap-7 xl:gap-3 lg:flex-row items-center justify-between">
                 <div
                     style={{
                         direction: "rtl",
@@ -13,7 +13,7 @@ const Navbar = () => {
                         textAlign: "center",
                     }}
                 >
-                    <p className="2xl:text-[30px] text-[#363636]">
+                    <p className="text-[16px] 2xl:text-[30px] text-[#363636]">
                         ﴿ ٱقْرَأْ بِٱسْمِ رَبِّكَ ٱلَّذِى خَلَقَ{" "}
                         <span className="text-[20px]">◆</span> خَلَقَ
                         ٱلْإِنسَٰنَ مِنْ عَلَقٍ{" "}
@@ -24,7 +24,7 @@ const Navbar = () => {
                         ٱلْإِنسَٰنَ مَا لَمْ يَعْلَمْ ﴾
                     </p>
                 </div>
-                <div className="flex gap-4 items-center">
+                <div className="flex gap-4 items-center justify-between w-full px-2">
                     <Image
                         src="/STORE.png"
                         alt="Description"

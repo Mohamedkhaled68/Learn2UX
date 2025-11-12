@@ -34,7 +34,9 @@ const QuestionAccordion: React.FC<QuestionAccordionProps> = ({
                 <div className="flex items-start gap-4 flex-1">
                     {/* Question Text */}
                     <h2
-                        className={`text-xl font-semibold flex-1 ${lang === "ar" ? "text-right" : "text-left"}`}
+                        className={`text-[15px] xl:text-xl font-semibold flex-1 ${
+                            lang === "ar" ? "text-right" : "text-left"
+                        }`}
                         style={{ color: textColor }}
                         dir={lang === "ar" ? "rtl" : "ltr"}
                     >
@@ -67,7 +69,7 @@ const QuestionAccordion: React.FC<QuestionAccordionProps> = ({
                 <div className="px-6 pb-6 pt-2">
                     {/* Answer */}
                     <div
-                        className="bg-gray-50 rounded-lg p-4 mb-4 ml-14"
+                        className="bg-gray-50 rounded-lg p-4 mb-4 ml-2 xl:ml-14"
                         dir={lang === "ar" ? "rtl" : "ltr"}
                     >
                         <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
