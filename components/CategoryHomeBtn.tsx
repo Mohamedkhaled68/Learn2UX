@@ -3,19 +3,7 @@ import Link from "next/link";
 import { ReactNode } from "react";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { motion } from "framer-motion";
-
-type Props = {
-    title: string;
-    description: string;
-    answers: number;
-    icon: ReactNode;
-    theme: {
-        bg: string;
-        text: string;
-    };
-    path: string;
-    lang: "en" | "ar";
-};
+import { CategoryHomeBtnProps } from "@/types/ComponentProps";
 
 const withAlpha = (color: string, alpha: number) => {
     if (color.startsWith("#")) {
@@ -38,9 +26,9 @@ const CategoryHomeBtn = ({
     answers,
     icon,
     theme,
-    path,
+    href,
     lang,
-}: Props) => {
+}: CategoryHomeBtnProps) => {
     // iconwidth = 75
     return (
         <motion.div
@@ -62,7 +50,8 @@ const CategoryHomeBtn = ({
 
                 <Link
                     className="rounded-full hover:bg-slate-300 p-2 duration-300 cursor-pointer"
-                    href={path}
+                    href={href}
+                    prefetch={true}
                 >
                     {lang === "en" ? (
                         <FaArrowRightLong

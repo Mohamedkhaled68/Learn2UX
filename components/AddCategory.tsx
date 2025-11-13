@@ -6,30 +6,9 @@ import Cookies from "js-cookie";
 import { PiMapTrifoldLight } from "react-icons/pi";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import Image from "next/image";
-
-interface CategoryFormData {
-    titleEn: string;
-    titleAr: string;
-    descriptionEn: string;
-    descriptionAr: string;
-    textColor: string;
-    borderColor: string;
-}
-
-interface FormErrors {
-    titleEn: string;
-    titleAr: string;
-    descriptionEn: string;
-    descriptionAr: string;
-    textColor: string;
-    borderColor: string;
-    icon: string;
-}
-
-interface ApiErrorResponse {
-    message?: string;
-    error?: string;
-}
+import { CategoryFormData } from "@/types/FormData";
+import { CategoryFormErrors } from "@/types/FormErrors";
+import { ApiErrorResponse } from "@/types/ApiResponse";
 
 const AddCategory: React.FC = () => {
     const [formData, setFormData] = useState<CategoryFormData>({
@@ -45,7 +24,7 @@ const AddCategory: React.FC = () => {
     const [iconPreview, setIconPreview] = useState<string>("");
     const [iconType, setIconType] = useState<"svg" | "png" | "">("");
 
-    const [errors, setErrors] = useState<FormErrors>({
+    const [errors, setErrors] = useState<CategoryFormErrors>({
         titleEn: "",
         titleAr: "",
         descriptionEn: "",
@@ -70,7 +49,7 @@ const AddCategory: React.FC = () => {
         }));
 
         // Clear error for this field when user starts typing
-        if (errors[name as keyof FormErrors]) {
+        if (errors[name as keyof CategoryFormErrors]) {
             setErrors((prev) => ({
                 ...prev,
                 [name]: "",
@@ -131,7 +110,7 @@ const AddCategory: React.FC = () => {
 
     // Validate form fields
     const validateForm = (): boolean => {
-        const newErrors: FormErrors = {
+        const newErrors: CategoryFormErrors = {
             titleEn: "",
             titleAr: "",
             descriptionEn: "",

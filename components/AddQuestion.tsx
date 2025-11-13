@@ -4,40 +4,10 @@ import React, { useState, useEffect, FormEvent, ChangeEvent } from "react";
 import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
-
-interface QuestionFormData {
-    categoryId: string;
-    questionEn: string;
-    questionAr: string;
-    answerEn: string;
-    answerAr: string;
-    links: string[];
-}
-
-interface FormErrors {
-    categoryId: string;
-    questionEn: string;
-    questionAr: string;
-    answerEn: string;
-    answerAr: string;
-}
-
-interface Category {
-    _id: string;
-    titleEn: string; // ✓ formData.titleEn
-    titleAr: string; // ✓ formData.titleAr
-    descriptionEn: string; // ✓ formData.descriptionEn
-    descriptionAr: string; // ✓ formData.descriptionAr
-    textColor: string; // ✓ formData.textColor (hex color)
-    borderColor: string; // ✓ formData.borderColor (hex color)
-    icon: string; // ✓ iconPreview (base64 encoded)
-    iconType: "svg" | "png"; // ✓ iconType
-}
-
-interface ApiErrorResponse {
-    message?: string;
-    error?: string;
-}
+import { QuestionFormData } from "@/types/FormData";
+import { QuestionFormErrors } from "@/types/FormErrors";
+import { Category } from "@/types/Category";
+import { ApiErrorResponse } from "@/types/ApiResponse";
 
 const AddQuestion: React.FC = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -52,7 +22,7 @@ const AddQuestion: React.FC = () => {
         links: [""],
     });
 
-    const [errors, setErrors] = useState<FormErrors>({
+    const [errors, setErrors] = useState<QuestionFormErrors>({
         categoryId: "",
         questionEn: "",
         questionAr: "",
@@ -104,8 +74,8 @@ const AddQuestion: React.FC = () => {
         }));
 
         // Clear error for this field when user starts typing
-        if (errors[name as keyof FormErrors]) {
-            setErrors((prev) => ({
+        if (errors[name as keyof QuestionFormErrors]) {
+            setErrors((prev: QuestionFormErrors) => ({
                 ...prev,
                 [name]: "",
             }));
@@ -147,7 +117,7 @@ const AddQuestion: React.FC = () => {
 
     // Validate form fields
     const validateForm = (): boolean => {
-        const newErrors: FormErrors = {
+        const newErrors: QuestionFormErrors = {
             categoryId: "",
             questionEn: "",
             questionAr: "",

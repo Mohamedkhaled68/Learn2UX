@@ -4,37 +4,18 @@ import React, { useState, FormEvent, ChangeEvent } from "react";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-
-interface FormData {
-    email: string;
-    password: string;
-}
-
-interface FormErrors {
-    email: string;
-    password: string;
-}
-
-interface ApiErrorResponse {
-    message?: string;
-    error?: string;
-}
-
-interface LoginResponse {
-    data: {
-        token: string;
-        message?: string;
-    };
-}
+import { AdminLoginFormData } from "@/types/FormData";
+import { AdminLoginFormErrors } from "@/types/FormErrors";
+import { ApiErrorResponse, LoginResponse } from "@/types/ApiResponse";
 
 const AdminLogin: React.FC = () => {
     const router = useRouter();
-    const [formData, setFormData] = useState<FormData>({
+    const [formData, setFormData] = useState<AdminLoginFormData>({
         email: "",
         password: "",
     });
 
-    const [errors, setErrors] = useState<FormErrors>({
+    const [errors, setErrors] = useState<AdminLoginFormErrors>({
         email: "",
         password: "",
     });
@@ -51,7 +32,7 @@ const AdminLogin: React.FC = () => {
         }));
 
         // Clear error for this field when user starts typing
-        if (errors[name as keyof FormErrors]) {
+        if (errors[name as keyof AdminLoginFormErrors]) {
             setErrors((prev) => ({
                 ...prev,
                 [name]: "",
@@ -64,7 +45,7 @@ const AdminLogin: React.FC = () => {
 
     // Validate form fields
     const validateForm = (): boolean => {
-        const newErrors: FormErrors = {
+        const newErrors: AdminLoginFormErrors = {
             email: "",
             password: "",
         };

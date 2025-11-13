@@ -5,46 +5,11 @@ import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
 import { FiEdit2, FiTrash2, FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
-
-interface Category {
-    _id: string;
-    titleEn: string;
-    titleAr: string;
-}
-
-interface Question {
-    _id: string;
-    categoryId: Category;
-    questionEn: string;
-    questionAr: string;
-    answerEn: string;
-    answerAr: string;
-    links: string[];
-    createdAt: string;
-    updatedAt: string;
-}
-
-interface QuestionFormData {
-    categoryId: string;
-    questionEn: string;
-    questionAr: string;
-    answerEn: string;
-    answerAr: string;
-    links: string[];
-}
-
-interface FormErrors {
-    categoryId: string;
-    questionEn: string;
-    questionAr: string;
-    answerEn: string;
-    answerAr: string;
-}
-
-interface ApiErrorResponse {
-    message?: string;
-    error?: string;
-}
+import { Category } from "@/types/Category";
+import { Question } from "@/types/Question";
+import { QuestionFormData } from "@/types/FormData";
+import { QuestionFormErrors } from "@/types/FormErrors";
+import { ApiErrorResponse } from "@/types/ApiResponse";
 
 const ManageQuestions: React.FC = () => {
     const [questions, setQuestions] = useState<Question[]>([]);
@@ -65,7 +30,7 @@ const ManageQuestions: React.FC = () => {
         links: [""],
     });
 
-    const [errors, setErrors] = useState<FormErrors>({
+    const [errors, setErrors] = useState<QuestionFormErrors>({
         categoryId: "",
         questionEn: "",
         questionAr: "",
@@ -177,7 +142,7 @@ const ManageQuestions: React.FC = () => {
             [name]: value,
         }));
 
-        if (errors[name as keyof FormErrors]) {
+        if (errors[name as keyof QuestionFormErrors]) {
             setErrors((prev) => ({
                 ...prev,
                 [name]: "",
@@ -219,7 +184,7 @@ const ManageQuestions: React.FC = () => {
 
     // Validate form fields
     const validateForm = (): boolean => {
-        const newErrors: FormErrors = {
+        const newErrors: QuestionFormErrors = {
             categoryId: "",
             questionEn: "",
             questionAr: "",

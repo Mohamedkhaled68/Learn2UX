@@ -2,16 +2,7 @@
 
 import React, { useState } from "react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
-
-interface QuestionAccordionProps {
-    question: string;
-    answer: string;
-    links: string[];
-    index: number;
-    borderColor: string;
-    textColor: string;
-    lang: "en" | "ar";
-}
+import { QuestionAccordionProps } from "@/types/ComponentProps";
 
 const QuestionAccordion: React.FC<QuestionAccordionProps> = ({
     question,

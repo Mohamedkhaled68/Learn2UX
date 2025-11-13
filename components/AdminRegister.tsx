@@ -3,30 +3,18 @@
 import React, { useState, FormEvent, ChangeEvent } from "react";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
-
-interface FormData {
-    username: string;
-    password: string;
-}
-
-interface FormErrors {
-    username: string;
-    password: string;
-}
-
-interface ApiErrorResponse {
-    message?: string;
-    error?: string;
-}
+import { AdminRegisterFormData } from "@/types/FormData";
+import { AdminRegisterFormErrors } from "@/types/FormErrors";
+import { ApiErrorResponse } from "@/types/ApiResponse";
 
 const AdminRegister: React.FC = () => {
     const router = useRouter();
-    const [formData, setFormData] = useState<FormData>({
+    const [formData, setFormData] = useState<AdminRegisterFormData>({
         username: "",
         password: "",
     });
 
-    const [errors, setErrors] = useState<FormErrors>({
+    const [errors, setErrors] = useState<AdminRegisterFormErrors>({
         username: "",
         password: "",
     });
@@ -44,7 +32,7 @@ const AdminRegister: React.FC = () => {
         }));
 
         // Clear error for this field when user starts typing
-        if (errors[name as keyof FormErrors]) {
+        if (errors[name as keyof AdminRegisterFormErrors]) {
             setErrors((prev) => ({
                 ...prev,
                 [name]: "",
@@ -58,7 +46,7 @@ const AdminRegister: React.FC = () => {
 
     // Validate form fields
     const validateForm = (): boolean => {
-        const newErrors: FormErrors = {
+        const newErrors: AdminRegisterFormErrors = {
             username: "",
             password: "",
         };

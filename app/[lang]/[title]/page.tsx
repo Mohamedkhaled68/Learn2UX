@@ -3,32 +3,16 @@ import QuestionAccordion from "@/components/QuestionAccordion";
 import { getDictionary } from "../dictionaries";
 import Link from "next/link";
 import toast from "react-hot-toast";
-
-
-interface Category {
-    _id: string;
-    titleEn: string;
-    titleAr: string;
-}
-
-interface Question {
-    _id: string;
-    categoryId: Category;
-    questionEn: string;
-    questionAr: string;
-    answerEn: string;
-    answerAr: string;
-    links: string[];
-    createdAt: string;
-    updatedAt: string;
-}
+import { Question } from "@/types/Question";
+import { Category } from "@/types/Category";
 
 async function getQuestions(): Promise<Question[]> {
     try {
         const response = await fetch(
             "https://learn2ux-backend.vercel.app/api/questions",
             {
-                cache: "no-store",
+                cache: "force-cache",
+                next: { revalidate: 3600 }, // Revalidate every hour
             }
         );
 
@@ -49,7 +33,8 @@ async function getCategoryById(categoryId: string) {
         const response = await fetch(
             `https://learn2ux-backend.vercel.app/api/categories/${categoryId}`,
             {
-                cache: "no-store",
+                cache: "force-cache",
+                next: { revalidate: 3600 }, // Revalidate every hour
             }
         );
 
@@ -92,6 +77,7 @@ export default async function page({
                         </h1>
                         <Link
                             href={`/${lang}`}
+                            prefetch={true}
                             className="text-indigo-600 hover:text-indigo-700 underline"
                         >
                             {lang === "en"

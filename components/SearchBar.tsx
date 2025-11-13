@@ -6,13 +6,7 @@ import { MdAttachMoney } from "react-icons/md";
 import Image from "next/image";
 import { ReactNode } from "react";
 import { FaArrowRight } from "react-icons/fa6";
-
-interface SearchBarProps {
-    categoryName?: string;
-    categoryIcon?: string | ReactNode;
-    categoryColor?: string;
-    lang?: "en" | "ar";
-}
+import { SearchBarProps } from "@/types/ComponentProps";
 
 const SearchBar: React.FC<SearchBarProps> = ({
     categoryName,
@@ -20,14 +14,16 @@ const SearchBar: React.FC<SearchBarProps> = ({
     lang = "en",
 }) => {
     return (
-        <div className="flex items-center justify-between w-full">
+        <div
+            className={`flex items-center flex-row-reverse justify-between w-full container`}
+        >
             {/* Left: Back Arrow */}
-            {lang === "ar" ? (
-                <Link href={`/${lang}`}>
+            {lang === "en" ? (
+                <Link href={`/${lang}`} prefetch={true}>
                     <FaArrowRight size={20} />
                 </Link>
             ) : (
-                <Link href={`/${lang}`}>
+                <Link href={`/${lang}`} prefetch={true}>
                     <FaArrowLeft size={20} />
                 </Link>
             )}
@@ -47,7 +43,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             </div> */}
 
             {/* Right: Category Name with Icon */}
-            <div className="flex items-center font-semibold justify-self-end">
+            <div className="flex items-center font-semibold">
                 {categoryIcon ? (
                     typeof categoryIcon === "string" ? (
                         <Image

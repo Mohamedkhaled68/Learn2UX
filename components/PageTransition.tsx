@@ -3,10 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
-
-interface PageTransitionProps {
-    children: ReactNode;
-}
+import { PageTransitionProps } from "@/types/ComponentProps";
 
 const variants = {
     hidden: {
@@ -30,22 +27,22 @@ export default function PageTransition({ children }: PageTransitionProps) {
     const pathname = usePathname();
     return (
         // <AnimatePresence initial={false}>
-            <motion.div
-                key={pathname}
-                variants={variants}
-                initial="hidden"
-                animate="enter"
-                // exit="exit"
-                transition={{
-                    type: "spring",
-                    stiffness: 50,
-                    damping: 10,
-                    duration: 0.5,
-                }}
-                className="absolute w-full h-full"
-            >
-                {children}
-            </motion.div>
+        <motion.div
+            key={pathname}
+            variants={variants}
+            initial="hidden"
+            animate="enter"
+            // exit="exit"
+            transition={{
+                type: "spring",
+                stiffness: 50,
+                damping: 10,
+                duration: 0.5,
+            }}
+            // className="absolute w-full h-full"
+        >
+            {children}
+        </motion.div>
         // </AnimatePresence>
     );
 }

@@ -3,30 +3,15 @@ import CategoryHomeBtn from "@/components/CategoryHomeBtn";
 import { getDictionary } from "./dictionaries";
 import Image from "next/image";
 import toast from "react-hot-toast";
-
-// Disable caching for this page
-
-interface Category {
-    _id: string;
-    titleEn: string;
-    titleAr: string;
-    descriptionEn: string;
-    descriptionAr: string;
-    questionNumber: number;
-    textColor: string;
-    borderColor: string;
-    icon: string;
-    iconType: "svg" | "png";
-    createdAt: string;
-    updatedAt: string;
-}
+import { Category } from "@/types/Category";
 
 async function getCategories(): Promise<Category[]> {
     try {
         const response = await fetch(
             "https://learn2ux-backend.vercel.app/api/categories",
             {
-                cache: "no-store",
+                cache: "force-cache",
+                next: { revalidate: 3600 }, // Revalidate every hour
             }
         );
 
@@ -105,7 +90,7 @@ export default async function page({
                                     bg: category.borderColor,
                                     text: category.textColor,
                                 }}
-                                path={`/${lang}/${category._id}`}
+                                href={`/${lang}/${category._id}`}
                             />
                         ))
                     ) : (

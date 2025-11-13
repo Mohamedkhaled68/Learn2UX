@@ -7,12 +7,7 @@ import AddQuestion from "@/components/AddQuestion";
 import ManageCategories from "@/components/ManageCategories";
 import ManageQuestions from "@/components/ManageQuestions";
 import Cookies from "js-cookie";
-
-type TabType =
-    | "addCategory"
-    | "manageCategories"
-    | "addQuestion"
-    | "manageQuestions";
+import { TabType } from "@/types/AdminTypes";
 
 const AdminDashboard: React.FC = () => {
     const router = useRouter();

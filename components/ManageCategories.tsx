@@ -6,44 +6,10 @@ import Cookies from "js-cookie";
 import Image from "next/image";
 import { FiEdit2, FiTrash2, FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
-
-interface Category {
-    _id: string;
-    titleEn: string;
-    titleAr: string;
-    descriptionEn: string;
-    descriptionAr: string;
-    textColor: string;
-    borderColor: string;
-    icon: string;
-    iconType: "svg" | "png";
-    createdAt: string;
-    updatedAt: string;
-}
-
-interface CategoryFormData {
-    titleEn: string;
-    titleAr: string;
-    descriptionEn: string;
-    descriptionAr: string;
-    textColor: string;
-    borderColor: string;
-}
-
-interface FormErrors {
-    titleEn: string;
-    titleAr: string;
-    descriptionEn: string;
-    descriptionAr: string;
-    textColor: string;
-    borderColor: string;
-    icon: string;
-}
-
-interface ApiErrorResponse {
-    message?: string;
-    error?: string;
-}
+import { Category } from "@/types/Category";
+import { CategoryFormData } from "@/types/FormData";
+import { CategoryFormErrors } from "@/types/FormErrors";
+import { ApiErrorResponse } from "@/types/ApiResponse";
 
 const ManageCategories: React.FC = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -66,7 +32,7 @@ const ManageCategories: React.FC = () => {
     const [iconPreview, setIconPreview] = useState<string>("");
     const [iconType, setIconType] = useState<"svg" | "png" | "">("");
 
-    const [errors, setErrors] = useState<FormErrors>({
+    const [errors, setErrors] = useState<CategoryFormErrors>({
         titleEn: "",
         titleAr: "",
         descriptionEn: "",
@@ -164,7 +130,7 @@ const ManageCategories: React.FC = () => {
             [name]: value,
         }));
 
-        if (errors[name as keyof FormErrors]) {
+        if (errors[name as keyof CategoryFormErrors]) {
             setErrors((prev) => ({
                 ...prev,
                 [name]: "",
@@ -219,7 +185,7 @@ const ManageCategories: React.FC = () => {
 
     // Validate form fields
     const validateForm = (): boolean => {
-        const newErrors: FormErrors = {
+        const newErrors: CategoryFormErrors = {
             titleEn: "",
             titleAr: "",
             descriptionEn: "",
