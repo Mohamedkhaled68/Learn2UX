@@ -3,6 +3,7 @@
 import React, { useState, useEffect, FormEvent, ChangeEvent } from "react";
 import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
+import toast from "react-hot-toast";
 
 interface QuestionFormData {
     categoryId: string;
@@ -79,12 +80,9 @@ const AddQuestion: React.FC = () => {
                     },
                 }
             );
-
-            console.log(response.data.data);
-
             setCategories(response.data.data);
         } catch (error) {
-            console.error("Failed to fetch categories:", error);
+            toast.error("Failed to load categories. Please refresh the page.");
             setErrorMessage(
                 "Failed to load categories. Please refresh the page."
             );

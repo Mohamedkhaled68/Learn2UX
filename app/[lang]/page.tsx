@@ -2,10 +2,9 @@ import Navbar from "@/components/Navbar";
 import CategoryHomeBtn from "@/components/CategoryHomeBtn";
 import { getDictionary } from "./dictionaries";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 // Disable caching for this page
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 interface Category {
     _id: string;
@@ -38,7 +37,7 @@ async function getCategories(): Promise<Category[]> {
         const data = await response.json();
         return data.data || [];
     } catch (error) {
-        console.error("Error fetching categories:", error);
+        toast.error("Unable to load categories. Please try again later.");
         return [];
     }
 }

@@ -220,9 +220,6 @@ const AddCategory: React.FC = () => {
                 formDataToSend.append("icon", iconFile);
                 formDataToSend.append("iconType", iconType);
             }
-
-            console.log(formDataToSend);
-
             const response = await axios.post(
                 "https://learn2ux-backend.vercel.app/api/categories",
                 {

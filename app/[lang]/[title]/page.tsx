@@ -2,10 +2,8 @@ import SearchBar from "@/components/SearchBar";
 import QuestionAccordion from "@/components/QuestionAccordion";
 import { getDictionary } from "../dictionaries";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
-// Disable caching for this page
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 interface Category {
     _id: string;
@@ -41,7 +39,7 @@ async function getQuestions(): Promise<Question[]> {
         const data = await response.json();
         return data.data || [];
     } catch (error) {
-        console.error("Error fetching questions:", error);
+        toast.error("Unable to load questions. Please try again later.");
         return [];
     }
 }
@@ -62,7 +60,7 @@ async function getCategoryById(categoryId: string) {
         const data = await response.json();
         return data.data || null;
     } catch (error) {
-        console.error("Error fetching category:", error);
+        toast.error("Unable to load category details. Please try again later.");
         return null;
     }
 }

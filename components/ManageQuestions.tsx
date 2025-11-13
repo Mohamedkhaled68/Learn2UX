@@ -4,6 +4,7 @@ import React, { useState, useEffect, FormEvent, ChangeEvent } from "react";
 import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
 import { FiEdit2, FiTrash2, FiX } from "react-icons/fi";
+import toast from "react-hot-toast";
 
 interface Category {
     _id: string;
@@ -98,7 +99,7 @@ const ManageQuestions: React.FC = () => {
 
             setQuestions(response.data.data || []);
         } catch (error) {
-            console.error("Failed to fetch questions:", error);
+            toast.error("Failed to load questions. Please refresh the page.");
             setErrorMessage(
                 "Failed to load questions. Please refresh the page."
             );
@@ -121,7 +122,7 @@ const ManageQuestions: React.FC = () => {
 
             setCategories(response.data.data || []);
         } catch (error) {
-            console.error("Failed to fetch categories:", error);
+            toast.error("Failed to load categories. Please refresh the page.");
         } finally {
             setLoadingCategories(false);
         }

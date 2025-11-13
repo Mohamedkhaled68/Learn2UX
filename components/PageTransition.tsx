@@ -28,9 +28,6 @@ const variants = {
 
 export default function PageTransition({ children }: PageTransitionProps) {
     const pathname = usePathname();
-    console.log(pathname);
-    console.log("route changed");
-
     return (
         // <AnimatePresence initial={false}>
             <motion.div

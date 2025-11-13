@@ -2,21 +2,30 @@
 
 @font-face {
     font-family: "Raleway";
-    src: url("/fonts/raleway.ttf") format("truetype");
+    src: url("/fonts/raleway.woff2") format("woff2");
+    font-display: swap;
 }
 @font-face {
     font-family: "Noto Sans Arabic";
-    src: url("/fonts/noto.ttf") format("truetype");
+    src: url("/fonts/noto.woff2") format("woff2");
+    font-display: swap;
 }
 @font-face {
     font-family: "TT Ramillas Trl";
-    src: url("/fonts/ramilas.ttf") format("truetype");
+    src: url("/fonts/ramilas.woff2") format("woff2");
+    font-display: swap;
+}
+@font-face {
+    font-family: "aya";
+    src: url("/fonts/aya.woff2") format("woff2");
+    font-display: swap;
 }
 
 @theme {
     --font-ramillas: "TT Ramillas Trl";
     --font-raleway: "Raleway";
     --font-noto: "Noto Sans Arabic";
+    --font-aya: "aya";
 }
 
 @media (max-width: 1900px) {
@@ -30,7 +39,6 @@
     }
 }
 
-
-body{
+body {
     overflow-x: hidden;
 }
