@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { motion } from "framer-motion";
 import { CategoryHomeBtnProps } from "@/types/ComponentProps";
+import { useRouter } from "next/navigation";
 
 const withAlpha = (color: string, alpha: number) => {
     if (color.startsWith("#")) {
@@ -29,6 +30,15 @@ const CategoryHomeBtn = ({
     href,
     lang,
 }: CategoryHomeBtnProps) => {
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        setIsLoading(true);
+        router.push(href);
+    };
+
     // iconwidth = 75
     return (
         <motion.div
@@ -49,11 +59,17 @@ const CategoryHomeBtn = ({
                 {icon}
 
                 <Link
-                    className="rounded-full hover:bg-slate-300 p-2 duration-300 cursor-pointer"
+                    className="rounded-full hover:bg-slate-200 p-2 duration-300 cursor-pointer"
                     href={href}
                     prefetch={true}
+                    onClick={handleClick}
                 >
-                    {lang === "en" ? (
+                    {isLoading ? (
+                        <div
+                            className="animate-spin h-6 w-6 border-2 border-current border-t-transparent rounded-full"
+                            style={{ borderColor: theme.text }}
+                        />
+                    ) : lang === "en" ? (
                         <FaArrowRightLong
                             style={{ color: theme.text }}
                             className="arrows"

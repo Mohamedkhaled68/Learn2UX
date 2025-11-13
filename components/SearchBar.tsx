@@ -4,27 +4,55 @@ import Link from "next/link";
 import { FaArrowLeft, FaSearch } from "react-icons/fa";
 import { MdAttachMoney } from "react-icons/md";
 import Image from "next/image";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { FaArrowRight } from "react-icons/fa6";
 import { SearchBarProps } from "@/types/ComponentProps";
+import { useRouter } from "next/navigation";
 
 const SearchBar: React.FC<SearchBarProps> = ({
     categoryName,
     categoryIcon,
     lang = "en",
 }) => {
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleBackClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        setIsLoading(true);
+        router.push(`/${lang}`);
+    };
+
     return (
         <div
             className={`flex items-center flex-row-reverse justify-between w-full container`}
         >
             {/* Left: Back Arrow */}
             {lang === "en" ? (
-                <Link href={`/${lang}`} prefetch={true}>
-                    <FaArrowRight size={20} />
+                <Link
+                    href={`/${lang}`}
+                    prefetch={true}
+                    onClick={handleBackClick}
+                    className="flex items-center justify-center"
+                >
+                    {isLoading ? (
+                        <div className="animate-spin h-5 w-5 border-2 border-gray-800 border-t-transparent rounded-full" />
+                    ) : (
+                        <FaArrowRight size={20} />
+                    )}
                 </Link>
             ) : (
-                <Link href={`/${lang}`} prefetch={true}>
-                    <FaArrowLeft size={20} />
+                <Link
+                    href={`/${lang}`}
+                    prefetch={true}
+                    onClick={handleBackClick}
+                    className="flex items-center justify-center"
+                >
+                    {isLoading ? (
+                        <div className="animate-spin h-5 w-5 border-2 border-gray-800 border-t-transparent rounded-full" />
+                    ) : (
+                        <FaArrowLeft size={20} />
+                    )}
                 </Link>
             )}
 
@@ -51,7 +79,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                             alt={categoryName || "Category"}
                             width={22}
                             height={22}
-                            className="object-contain"
+                            className="object-contain w-[25px] h-[25px] 2xl:w-[35px] 2xl:h-[35px]"
                             unoptimized
                         />
                     ) : (

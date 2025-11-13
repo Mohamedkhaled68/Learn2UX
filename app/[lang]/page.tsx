@@ -57,7 +57,7 @@ export default async function page({
                 <Navbar />
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 2xl:gap-8 justify-items-stretch">
                     {categories.length > 0 ? (
-                        categories.map((category) => (
+                        categories.reverse().map((category) => (
                             <CategoryHomeBtn
                                 lang={lang}
                                 key={category._id}
