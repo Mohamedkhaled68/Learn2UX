@@ -37,7 +37,7 @@ export default async function RootLayout({
             >
                 <LanguageProvider lang={lang}>
                     <main className="flex-1">
-                        <div className="container mx-auto relative">
+                        <div className="container mx-auto">
                             <PageTransition>{children}</PageTransition>
                             <Toaster
                                 position="top-center"

@@ -12,8 +12,10 @@ const Navbar = () => {
                         src="/STORE.png"
                         alt="Description"
                         width={85}
-                        height={100}
+                        height={85}
                         className="drop-shadow-md"
+                        quality={100}
+                        unoptimized
                     />
                     <LanguageLevelSelector />
                 </div>
