@@ -2,7 +2,7 @@ const AyaContainer = () => {
     return (
         <p
             style={{ direction: "rtl" }}
-            className="text-[#363636] font-aya text-[16px] lg:text-[18px] 2xl:text-[28px]"
+            className="text-[#363636] font-aya text-[16px] lg:text-[18px] 2xl:text-[28px] text-center"
         >
             ﴿ ٱقْرَأْ بِٱسْمِ رَبِّكَ ٱلَّذِى خَلَقَ ۞ خَلَقَ ٱلْإِنسَٰنَ مِنْ
             عَلَقٍ ۞ ٱقْرَأْ وَرَبُّكَ ٱلْأَكْرَمُ ۞ ٱلَّذِى عَلَّمَ بِٱلْقَلَمِ
