@@ -7,6 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useRouter, usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import Spinner from "./Spinner";
 
 const LanguageLevelSelector = () => {
     const { lang } = useLanguage();
@@ -40,7 +41,7 @@ const LanguageLevelSelector = () => {
                 disabled={isLoading}
             >
                 {isLoading ? (
-                    <div className="animate-spin h-4 w-4 border-2 border-gray-600 border-t-transparent rounded-full" />
+                    <Spinner width={15} height={15} />
                 ) : (
                     <motion.div
                         key={`ar-${lang}`}
@@ -87,7 +88,7 @@ const LanguageLevelSelector = () => {
                 disabled={isLoading}
             >
                 {isLoading ? (
-                    <div className="animate-spin h-4 w-4 border-2 border-gray-600 border-t-transparent rounded-full" />
+                    <Spinner width={15} height={15} />
                 ) : (
                     <motion.div
                         key={`en-${lang}`}

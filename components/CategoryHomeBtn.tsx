@@ -5,6 +5,7 @@ import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { motion } from "framer-motion";
 import { CategoryHomeBtnProps } from "@/types/ComponentProps";
 import { useRouter } from "next/navigation";
+import Spinner from "./Spinner";
 
 const withAlpha = (color: string, alpha: number) => {
     if (color.startsWith("#")) {
@@ -65,10 +66,7 @@ const CategoryHomeBtn = ({
                     onClick={handleClick}
                 >
                     {isLoading ? (
-                        <div
-                            className="animate-spin h-6 w-6 border-2 border-current border-t-transparent rounded-full"
-                            style={{ borderColor: theme.text }}
-                        />
+                        <Spinner color={theme.text} width={25} height={25} />
                     ) : lang === "en" ? (
                         <FaArrowRightLong
                             style={{ color: theme.text }}
