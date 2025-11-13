@@ -32,16 +32,16 @@ export default function PageTransition({ children }: PageTransitionProps) {
     console.log("route changed");
 
     return (
-        <AnimatePresence initial={false}>
+        // <AnimatePresence initial={false}>
             <motion.div
                 key={pathname}
                 variants={variants}
                 initial="hidden"
                 animate="enter"
-                exit="exit"
+                // exit="exit"
                 transition={{
                     type: "spring",
-                    stiffness: 100,
+                    stiffness: 50,
                     damping: 10,
                     duration: 0.5,
                 }}
@@ -49,6 +49,6 @@ export default function PageTransition({ children }: PageTransitionProps) {
             >
                 {children}
             </motion.div>
-        </AnimatePresence>
+        // </AnimatePresence>
     );
 }

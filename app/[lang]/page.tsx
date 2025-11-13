@@ -69,7 +69,7 @@ export default async function page({
     };
     return (
         <>
-            <div className="min-h-screen xl:max-h-screen flex flex-col justify-around py-2 px-4 lg:px-0 gap-7 lg:gap-0">
+            <div className="min-h-screen xl:max-h-screen flex flex-col justify-around py-2 pt-5 px-4 lg:pt-0 lg:px-0 gap-7 lg:gap-0">
                 <Navbar />
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 2xl:gap-8 justify-items-stretch">
                     {categories.length > 0 ? (

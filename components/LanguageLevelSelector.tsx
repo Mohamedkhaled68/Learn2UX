@@ -23,7 +23,7 @@ const LanguageLevelSelector = () => {
         <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            transition={{ duration: 0.9, ease: "easeOut" }}
             className="flex items-center gap-[16px] bg-white py-[12px] px-[16px] rounded-full shadow-md border border-[#8B8B8B80]/50"
         >
             {/* Language Toggle */}
