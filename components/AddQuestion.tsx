@@ -34,11 +34,103 @@ const AddQuestion: React.FC = () => {
     const [successMessage, setSuccessMessage] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [activeTextarea, setActiveTextarea] = useState<string | null>(null);
+    const [activeFormats, setActiveFormats] = useState<Set<string>>(new Set());
 
     // Fetch categories on component mount
     useEffect(() => {
         fetchCategories();
     }, []);
+
+    // Update active formats when selection changes
+    useEffect(() => {
+        const updateActiveFormats = () => {
+            if (!activeTextarea) return;
+
+            const formats = new Set<string>();
+
+            // Check bold
+            if (document.queryCommandState("bold")) {
+                formats.add("bold");
+            }
+
+            // Check italic
+            if (document.queryCommandState("italic")) {
+                formats.add("italic");
+            }
+
+            // Check underline
+            if (document.queryCommandState("underline")) {
+                formats.add("underline");
+            }
+
+            // Check lists
+            if (document.queryCommandState("insertUnorderedList")) {
+                formats.add("bullet");
+            }
+
+            if (document.queryCommandState("insertOrderedList")) {
+                formats.add("number");
+            }
+
+            // Check for code, heading, and link tags manually
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0) {
+                let node = selection.anchorNode;
+                while (node) {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        const element = node as HTMLElement;
+                        const tagName = element.tagName?.toLowerCase();
+
+                        if (tagName === "code") {
+                            formats.add("code");
+                        }
+                        if (tagName === "h3") {
+                            formats.add("heading");
+                        }
+                        if (tagName === "a") {
+                            formats.add("link");
+                        }
+                    }
+                    node = node.parentNode as Node;
+                    if (
+                        node &&
+                        (node as HTMLElement).getAttribute?.("data-name")
+                    ) {
+                        break;
+                    }
+                }
+            }
+
+            setActiveFormats(formats);
+        };
+
+        if (activeTextarea) {
+            const editableDiv = document.querySelector(
+                `div[data-name="${activeTextarea}"]`
+            );
+
+            if (editableDiv) {
+                editableDiv.addEventListener("keyup", updateActiveFormats);
+                editableDiv.addEventListener("mouseup", updateActiveFormats);
+                editableDiv.addEventListener("focus", updateActiveFormats);
+
+                return () => {
+                    editableDiv.removeEventListener(
+                        "keyup",
+                        updateActiveFormats
+                    );
+                    editableDiv.removeEventListener(
+                        "mouseup",
+                        updateActiveFormats
+                    );
+                    editableDiv.removeEventListener(
+                        "focus",
+                        updateActiveFormats
+                    );
+                };
+            }
+        }
+    }, [activeTextarea]);
 
     // Handle text formatting
     const applyFormatting = (format: string) => {
@@ -494,7 +586,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("bold");
                                 }}
-                                className="px-3 py-1 text-sm font-bold bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm font-bold border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("bold")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="Bold"
                             >
                                 B
@@ -505,7 +601,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("italic");
                                 }}
-                                className="px-3 py-1 text-sm italic bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm italic border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("italic")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="Italic"
                             >
                                 I
@@ -516,7 +616,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("underline");
                                 }}
-                                className="px-3 py-1 text-sm underline bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm underline border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("underline")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="Underline"
                             >
                                 U
@@ -527,7 +631,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("code");
                                 }}
-                                className="px-3 py-1 text-sm font-mono bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm font-mono border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("code")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="Code"
                             >
                                 {"</>"}
@@ -539,7 +647,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("bullet");
                                 }}
-                                className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("bullet")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="Bullet List"
                             >
                                 • List
@@ -550,7 +662,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("number");
                                 }}
-                                className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("number")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="Numbered List"
                             >
                                 1. List
@@ -562,7 +678,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("heading");
                                 }}
-                                className="px-3 py-1 text-sm font-bold bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm font-bold border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("heading")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="Heading"
                             >
                                 H
@@ -573,7 +693,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("link");
                                 }}
-                                className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("link")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="Link"
                             >
                                 🔗 Link
@@ -648,7 +772,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("bold");
                                 }}
-                                className="px-3 py-1 text-sm font-bold bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm font-bold border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("bold")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="عريض"
                             >
                                 B
@@ -659,7 +787,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("italic");
                                 }}
-                                className="px-3 py-1 text-sm italic bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm italic border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("italic")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="مائل"
                             >
                                 I
@@ -670,7 +802,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("underline");
                                 }}
-                                className="px-3 py-1 text-sm underline bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm underline border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("underline")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="تحته خط"
                             >
                                 U
@@ -681,7 +817,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("code");
                                 }}
-                                className="px-3 py-1 text-sm font-mono bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm font-mono border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("code")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="كود"
                             >
                                 {"</>"}
@@ -693,7 +833,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("bullet");
                                 }}
-                                className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("bullet")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="قائمة نقطية"
                             >
                                 • قائمة
@@ -704,7 +848,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("number");
                                 }}
-                                className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("number")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="قائمة مرقمة"
                             >
                                 1. قائمة
@@ -716,7 +864,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("heading");
                                 }}
-                                className="px-3 py-1 text-sm font-bold bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm font-bold border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("heading")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="عنوان"
                             >
                                 H
@@ -727,7 +879,11 @@ const AddQuestion: React.FC = () => {
                                     e.preventDefault();
                                     applyFormatting("link");
                                 }}
-                                className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                                className={`px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors ${
+                                    activeFormats.has("link")
+                                        ? "bg-indigo-100 border-indigo-400"
+                                        : "bg-white"
+                                }`}
                                 title="رابط"
                             >
                                 🔗 رابط
