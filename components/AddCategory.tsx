@@ -10,6 +10,22 @@ import { CategoryFormData } from "@/types/FormData";
 import { CategoryFormErrors } from "@/types/FormErrors";
 import { ApiErrorResponse } from "@/types/ApiResponse";
 
+const withAlpha = (color: string, alpha: number) => {
+    if (color.startsWith("#")) {
+        return `${color}${Math.round(alpha * 255)
+            .toString(16)
+            .padStart(2, "0")}`;
+    }
+
+    const nums = color.match(/\d+/g);
+    if (!nums || nums.length < 3) {
+        // fallback to black if the color string doesn't contain RGB values
+        return `rgba(0, 0, 0, ${alpha})`;
+    }
+
+    return `rgba(${nums.slice(0, 3).join(", ")}, ${alpha})`;
+};
+
 const AddCategory: React.FC = () => {
     const [formData, setFormData] = useState<CategoryFormData>({
         titleEn: "",
@@ -618,11 +634,17 @@ const AddCategory: React.FC = () => {
 
                     {/* English Preview */}
                     <div
+                        className={`w-full p-4 2xl:p-[30px] rounded-[16px] flex flex-col gap-2 2xl:gap-[15px] bg-white select-none`}
                         style={{
-                            border: `1px solid ${formData.borderColor}`,
-                            boxShadow: `0 0px 10px 1px ${formData.borderColor}`,
+                            border: `1px solid ${withAlpha(
+                                formData.borderColor,
+                                0.4
+                            )}`,
+                            boxShadow: `0 0px 10px 1px ${withAlpha(
+                                formData.borderColor,
+                                0.15
+                            )}`,
                         }}
-                        className="p-4 rounded-md flex flex-col gap-4 bg-white"
                     >
                         <div className="flex items-center justify-between w-full">
                             <div
@@ -671,10 +693,16 @@ const AddCategory: React.FC = () => {
                     {/* Arabic Preview */}
                     <div
                         style={{
-                            border: `1px solid ${formData.borderColor}`,
-                            boxShadow: `0 0px 10px 1px ${formData.borderColor}`,
+                            border: `1px solid ${withAlpha(
+                                formData.borderColor,
+                                0.4
+                            )}`,
+                            boxShadow: `0 0px 10px 1px ${withAlpha(
+                                formData.borderColor,
+                                0.15
+                            )}`,
                         }}
-                        className="p-4 rounded-md flex flex-col gap-4 bg-white"
+                        className={`w-full p-4 2xl:p-[30px] rounded-[16px] flex flex-col gap-2 2xl:gap-[15px] bg-white select-none font-noto`}
                     >
                         <div className="flex flex-row-reverse items-center justify-between w-full">
                             <div
