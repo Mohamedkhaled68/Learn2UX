@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { QuestionAccordionProps } from "@/types/ComponentProps";
+import ReactMarkdown from "react-markdown";
 
 const QuestionAccordion: React.FC<QuestionAccordionProps> = ({
     question,
@@ -63,9 +64,9 @@ const QuestionAccordion: React.FC<QuestionAccordionProps> = ({
                         className="bg-gray-50 rounded-lg p-4 mb-4 ml-2 xl:ml-14"
                         dir={lang === "ar" ? "rtl" : "ltr"}
                     >
-                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                            {answer}
-                        </p>
+                        <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                            <ReactMarkdown>{answer}</ReactMarkdown>
+                        </div>
                     </div>
 
                     {/* Links */}

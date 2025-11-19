@@ -10,6 +10,8 @@ import { Question } from "@/types/Question";
 import { QuestionFormData } from "@/types/FormData";
 import { QuestionFormErrors } from "@/types/FormErrors";
 import { ApiErrorResponse } from "@/types/ApiResponse";
+import ReactMarkdown from "react-markdown";
+
 
 const ManageQuestions: React.FC = () => {
     const [questions, setQuestions] = useState<Question[]>([]);
@@ -743,9 +745,9 @@ const ManageQuestions: React.FC = () => {
 
                                     {/* Answer Preview */}
                                     <div className="bg-gray-50 rounded p-3 mb-2">
-                                        <p className="text-sm text-gray-700 line-clamp-2">
-                                            {question.answerEn}
-                                        </p>
+                                        <div className="text-sm text-gray-700 line-clamp-2">
+                                            <ReactMarkdown>{question.answerEn}</ReactMarkdown>
+                                        </div>
                                     </div>
 
                                     {/* Links Count */}
