@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import usFlag from "@/public/us-flag.png";
-import saFlag from "@/public/sa-flag.png";
+import saFlag from "@/public/sa-flag.webp";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useRouter, usePathname } from "next/navigation";
 import { motion } from "framer-motion";

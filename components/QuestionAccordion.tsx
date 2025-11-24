@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { QuestionAccordionProps } from "@/types/ComponentProps";
 import ReactMarkdown from "react-markdown";
@@ -13,14 +13,14 @@ const QuestionAccordion: React.FC<QuestionAccordionProps> = ({
     borderColor,
     textColor,
     lang,
+    isOpen,
+    onToggle,
 }) => {
-    const [isOpen, setIsOpen] = useState(false);
-
     return (
         <div className="bg-white rounded-4xl shadow-md hover:shadow-lg transition-all">
             {/* Question Header - Clickable */}
             <button
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={onToggle}
                 className="w-full p-6 flex items-center justify-between gap-4 text-left hover:bg-gray-50 transition-colors rounded-xl"
             >
                 <div className="flex items-start gap-4 flex-1">
@@ -55,7 +55,7 @@ const QuestionAccordion: React.FC<QuestionAccordionProps> = ({
             {/* Answer Content - Collapsible */}
             <div
                 className={`overflow-hidden transition-all duration-300 ease ${
-                    isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+                    isOpen ? "opacity-100" : "max-h-0 opacity-0"
                 }`}
             >
                 <div className="px-6 pb-6 pt-2">

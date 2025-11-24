@@ -9,7 +9,7 @@ const Navbar = () => {
                 <AyaContainer />
                 <div className="flex gap-4 items-center w-full justify-between lg:w-fit px-2">
                     <Image
-                        src="/STORE.png"
+                        src="/STORE.webp"
                         alt="Description"
                         width={85}
                         height={85}

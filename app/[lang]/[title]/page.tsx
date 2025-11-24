@@ -1,5 +1,5 @@
 import SearchBar from "@/components/SearchBar";
-import QuestionAccordion from "@/components/QuestionAccordion";
+import QuestionsList from "@/components/QuestionsList";
 import { getDictionary } from "../dictionaries";
 import Link from "next/link";
 import { Question } from "@/types/Question";
@@ -14,7 +14,8 @@ async function getQuestions(): Promise<Question[]> {
         const response = await fetch(
             "https://learn2ux-backend.vercel.app/api/questions",
             {
-                cache: "no-store", // Server-render on demand
+                cache: "force-cache",
+                next: { revalidate: 60 }, // Revalidate every 60 seconds
             }
         );
 
@@ -106,28 +107,12 @@ export default async function page({
             <div className="w-full mx-auto xl:px-4 py-8">
                 {/* Questions List */}
                 {categoryQuestions.length > 0 ? (
-                    <div className="space-y-4">
-                        {categoryQuestions.map((question, index) => (
-                            <QuestionAccordion
-                                key={question._id}
-                                question={
-                                    lang === "en"
-                                        ? question.questionEn
-                                        : question.questionAr
-                                }
-                                answer={
-                                    lang === "en"
-                                        ? question.answerEn
-                                        : question.answerAr
-                                }
-                                links={question.links}
-                                index={index}
-                                borderColor={category.borderColor}
-                                textColor={category.textColor}
-                                lang={lang}
-                            />
-                        ))}
-                    </div>
+                    <QuestionsList
+                        questions={categoryQuestions}
+                        lang={lang}
+                        borderColor={category.borderColor}
+                        textColor={category.textColor}
+                    />
                 ) : (
                     <div className="bg-white rounded-xl shadow-md p-12 text-center">
                         <svg

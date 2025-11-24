@@ -17,6 +17,8 @@ interface QuestionAccordionProps {
     borderColor: string;
     textColor: string;
     lang: "en" | "ar";
+    isOpen: boolean;
+    onToggle: () => void;
 }
 
 // Category Home Button Props
