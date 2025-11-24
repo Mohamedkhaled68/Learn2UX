@@ -2,17 +2,19 @@ import SearchBar from "@/components/SearchBar";
 import QuestionAccordion from "@/components/QuestionAccordion";
 import { getDictionary } from "../dictionaries";
 import Link from "next/link";
-import toast from "react-hot-toast";
 import { Question } from "@/types/Question";
 import { Category } from "@/types/Category";
+import toast from "react-hot-toast";
+
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
 
 async function getQuestions(): Promise<Question[]> {
     try {
         const response = await fetch(
             "https://learn2ux-backend.vercel.app/api/questions",
             {
-                cache: "force-cache",
-                next: { revalidate: 3600 }, // Revalidate every hour
+                cache: "no-store", // Server-render on demand
             }
         );
 
@@ -23,7 +25,7 @@ async function getQuestions(): Promise<Question[]> {
         const data = await response.json();
         return data.data || [];
     } catch (error) {
-        toast.error("Unable to load questions. Please try again later.");
+        toast.error("Failed to fetch questions");
         return [];
     }
 }
@@ -33,8 +35,7 @@ async function getCategoryById(categoryId: string) {
         const response = await fetch(
             `https://learn2ux-backend.vercel.app/api/categories/${categoryId}`,
             {
-                cache: "force-cache",
-                next: { revalidate: 3600 }, // Revalidate every hour
+                cache: "no-store", // Server-render on demand
             }
         );
 
@@ -45,7 +46,7 @@ async function getCategoryById(categoryId: string) {
         const data = await response.json();
         return data.data || null;
     } catch (error) {
-        toast.error("Unable to load category details. Please try again later.");
+        toast.error("Failed to fetch category");
         return null;
     }
 }

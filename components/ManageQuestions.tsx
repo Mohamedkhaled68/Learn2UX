@@ -12,7 +12,6 @@ import { QuestionFormErrors } from "@/types/FormErrors";
 import { ApiErrorResponse } from "@/types/ApiResponse";
 import ReactMarkdown from "react-markdown";
 
-
 const ManageQuestions: React.FC = () => {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -119,6 +118,8 @@ const ManageQuestions: React.FC = () => {
     // Handle edit button click
     const handleEditClick = (question: Question) => {
         setSelectedQuestion(question);
+        console.log(question);
+
         setFormData({
             categoryId: question.categoryId._id,
             questionEn: question.questionEn,
@@ -282,7 +283,7 @@ const ManageQuestions: React.FC = () => {
                     questionAr: formData.questionAr,
                     answerEn: formData.answerEn,
                     answerAr: formData.answerAr,
-                    links: validLinks.length > 0 ? validLinks : undefined,
+                    links: validLinks,
                 },
                 {
                     headers: {
@@ -746,7 +747,9 @@ const ManageQuestions: React.FC = () => {
                                     {/* Answer Preview */}
                                     <div className="bg-gray-50 rounded p-3 mb-2">
                                         <div className="text-sm text-gray-700 line-clamp-2">
-                                            <ReactMarkdown>{question.answerEn}</ReactMarkdown>
+                                            <ReactMarkdown>
+                                                {question.answerEn}
+                                            </ReactMarkdown>
                                         </div>
                                     </div>
 
