@@ -3,12 +3,12 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import PageTransition from "@/components/PageTransition";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import Script from "next/script";
 
 export const metadata: Metadata = {
     title: "Learn2ux",
     description: "Get 150+ Answers About Interface Design For Free.",
 };
-
 
 type Params = Promise<{ lang: string }>;
 
@@ -30,6 +30,18 @@ export default async function RootLayout({
                     type="image/x-icon"
                     sizes="any"
                 />
+                <Script
+                    async
+                    src="https://www.googletagmanager.com/gtag/js?id=G-MTVN2RNSXG"
+                />
+                <Script id="google-analytics">
+                    {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-MTVN2RNSXG');
+          `}
+                </Script>
             </head>
             <body
                 suppressHydrationWarning
