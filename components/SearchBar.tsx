@@ -27,49 +27,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
         <div
             className={`flex items-center flex-row-reverse justify-between w-full container`}
         >
-            {/* Left: Back Arrow */}
-            {lang === "en" ? (
-                <Link
-                    href={`/${lang}`}
-                    prefetch={true}
-                    onClick={handleBackClick}
-                    className="flex items-center justify-center"
-                >
-                    {isLoading ? (
-                        <div className="animate-spin h-5 w-5 border-2 border-gray-800 border-t-transparent rounded-full" />
-                    ) : (
-                        <FaArrowRight size={20} />
-                    )}
-                </Link>
-            ) : (
-                <Link
-                    href={`/${lang}`}
-                    prefetch={true}
-                    onClick={handleBackClick}
-                    className="flex items-center justify-center"
-                >
-                    {isLoading ? (
-                        <div className="animate-spin h-5 w-5 border-2 border-gray-800 border-t-transparent rounded-full" />
-                    ) : (
-                        <FaArrowLeft size={20} />
-                    )}
-                </Link>
-            )}
-
-            {/* Search Input */}
-            {/* <div className="col-span-3 flex items-center flex-grow mx-4 bg-white rounded-full px-4 py-2 border border-black/20 shadow">
-                <FaSearch className="text-gray-400" />
-                <input
-                    type="text"
-                    placeholder={
-                        lang === "en"
-                            ? "Search"
-                            : "إبحث"
-                    }
-                    className="w-full border-none outline-none px-2 text-gray-700 bg-transparent"
-                />
-            </div> */}
-
             {/* Right: Category Name with Icon */}
             <div className="flex items-center font-semibold">
                 {categoryIcon ? (
@@ -92,6 +49,49 @@ const SearchBar: React.FC<SearchBarProps> = ({
                     {categoryName || "Taxes"}
                 </span>
             </div>
+
+            {/* Search Input */}
+            {/* <div className="col-span-3 flex items-center flex-grow mx-4 bg-white rounded-full px-4 py-2 border border-black/20 shadow">
+                <FaSearch className="text-gray-400" />
+                <input
+                    type="text"
+                    placeholder={
+                        lang === "en"
+                            ? "Search"
+                            : "إبحث"
+                    }
+                    className="w-full border-none outline-none px-2 text-gray-700 bg-transparent"
+                />
+            </div> */}
+
+            {/* Left: Back Arrow */}
+            {lang === "en" ? (
+                <Link
+                    href={`/${lang}`}
+                    prefetch={true}
+                    onClick={handleBackClick}
+                    className="flex items-center justify-center"
+                >
+                    {isLoading ? (
+                        <div className="animate-spin h-5 w-5 border-2 border-gray-800 border-t-transparent rounded-full" />
+                    ) : (
+                        <FaArrowLeft size={20} />
+                    )}
+                </Link>
+            ) : (
+                <Link
+                    href={`/${lang}`}
+                    prefetch={true}
+                    onClick={handleBackClick}
+                    className="flex items-center justify-center"
+                >
+                    {isLoading ? (
+                        <div className="animate-spin h-5 w-5 border-2 border-gray-800 border-t-transparent rounded-full" />
+                    ) : (
+                        <FaArrowRight size={20} />
+                    )}
+                </Link>
+            )}
         </div>
     );
 };

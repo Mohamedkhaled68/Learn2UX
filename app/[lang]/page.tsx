@@ -117,7 +117,7 @@ export default async function page({
                     <h1 className="text-2xl font-bold 2xl:text-[28px] text-[#363636] ">
                         {lang === "en" ? "Side Note" : "ملاحظة جانبية"} :
                     </h1>
-                    <p className="text-[#363636] opacity-70 text-[14px] 2xl:text-[18px]">
+                    <p className="text-[#363636] opacity-70 text-[14px]">
                         {dictionary.sideNote}
                     </p>
                 </div>

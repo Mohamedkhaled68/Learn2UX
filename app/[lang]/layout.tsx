@@ -30,6 +30,30 @@ export default async function RootLayout({
                     type="image/x-icon"
                     sizes="any"
                 />
+                {/* Preload critical fonts */}
+                <link
+                    rel="preload"
+                    href="/fonts/raleway.woff2"
+                    as="font"
+                    type="font/woff2"
+                    crossOrigin="anonymous"
+                />
+
+                <link
+                    rel="preload"
+                    href="/fonts/noto.woff2"
+                    as="font"
+                    type="font/woff2"
+                    crossOrigin="anonymous"
+                />
+
+                <link
+                    rel="preload"
+                    href="/fonts/ramilas.woff2"
+                    as="font"
+                    type="font/woff2"
+                    crossOrigin="anonymous"
+                />
                 <Script
                     async
                     src="https://www.googletagmanager.com/gtag/js?id=G-MTVN2RNSXG"

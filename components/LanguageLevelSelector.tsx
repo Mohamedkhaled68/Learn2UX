@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import usFlag from "@/public/us-flag.png";
+import ukFlag from "@/public/uk-flag.webp";
 import saFlag from "@/public/sa-flag.webp";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useRouter, usePathname } from "next/navigation";
@@ -99,7 +99,7 @@ const LanguageLevelSelector = () => {
                     >
                         {lang === "en" ? (
                             <Image
-                                src={usFlag}
+                                src={ukFlag}
                                 fill
                                 quality={100}
                                 alt={"English"}
@@ -107,7 +107,7 @@ const LanguageLevelSelector = () => {
                             />
                         ) : (
                             <Image
-                                src={usFlag}
+                                src={ukFlag}
                                 fill
                                 quality={100}
                                 alt={"English"}
