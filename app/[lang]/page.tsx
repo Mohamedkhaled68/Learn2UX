@@ -2,30 +2,9 @@ import Navbar from "@/components/Navbar";
 import CategoryHomeBtn from "@/components/CategoryHomeBtn";
 import { getDictionary } from "./dictionaries";
 import Image from "next/image";
-import toast from "react-hot-toast";
 import { Category } from "@/types/Category";
-
-async function getCategories(): Promise<Category[]> {
-    try {
-        const response = await fetch(
-            "https://learn2ux-backend.vercel.app/api/categories",
-            {
-                cache: "force-cache",
-                next: { revalidate: 3600 }, // Revalidate every hour
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch categories");
-        }
-
-        const data = await response.json();
-        return data.data || [];
-    } catch (error) {
-        toast.error("Unable to load categories. Please try again later.");
-        return [];
-    }
-}
+import { createClient } from "@/lib/supabase/server";
+import { withAlpha } from "@/utils/helpers";
 
 export default async function page({
     params,
@@ -34,63 +13,55 @@ export default async function page({
 }) {
     const { lang } = await params;
     const dictionary = await getDictionary(lang);
-    const categories = await getCategories();
+    const supabase = await createClient();
+    const { data: categories } = await supabase
+        .from("categories_with_count")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    const withAlpha = (color: string, alpha: number) => {
-        if (color.startsWith("#")) {
-            return `${color}${Math.round(alpha * 255)
-                .toString(16)
-                .padStart(2, "0")}`;
-        }
-
-        const nums = color.match(/\d+/g);
-        if (!nums || nums.length < 3) {
-            // fallback to black if the color string doesn't contain RGB values
-            return `rgba(0, 0, 0, ${alpha})`;
-        }
-
-        return `rgba(${nums.slice(0, 3).join(", ")}, ${alpha})`;
-    };
     return (
         <>
             <div className="min-h-screen xl:max-h-screen flex flex-col justify-around py-2 pt-5 px-4 lg:pt-0 lg:px-0 gap-7 lg:gap-0">
                 <Navbar />
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 2xl:gap-8 justify-items-stretch">
-                    {categories.length > 0 ? (
-                        categories.reverse().map((category) => (
+                    {categories && categories.length > 0 ? (
+                        categories.reverse().map((category: Category) => (
                             <CategoryHomeBtn
                                 lang={lang}
-                                key={category._id}
+                                key={category.id}
                                 icon={
                                     <Image
-                                        src={category.icon}
+                                        src={
+                                            category.icon_url ||
+                                            "/default-icon.svg"
+                                        }
                                         alt={
                                             lang === "en"
-                                                ? category.titleEn
-                                                : category.titleAr
+                                                ? category.title_en
+                                                : category.title_ar
                                         }
                                         width={35}
                                         height={35}
-                                        className="object-contain w-[25px] h-[25px] 2xl:w-[35px] 2xl:h-[35px]"
+                                        className="object-contain w-6.25 h-6.25 2xl:w-8.75 2xl:h-8.75"
                                         unoptimized
                                     />
                                 }
                                 title={
                                     lang === "en"
-                                        ? category.titleEn
-                                        : category.titleAr
+                                        ? category.title_en
+                                        : category.title_ar
                                 }
                                 description={
                                     lang === "en"
-                                        ? category.descriptionEn
-                                        : category.descriptionAr
+                                        ? category.description_en
+                                        : category.description_ar
                                 }
-                                answers={category.questionNumber}
+                                answers={category.question_number}
                                 theme={{
-                                    bg: category.borderColor,
-                                    text: category.textColor,
+                                    bg: category.border_color,
+                                    text: category.text_color,
                                 }}
-                                href={`/${lang}/${category._id}`}
+                                href={`/${lang}/${category.id}`}
                             />
                         ))
                     ) : (
@@ -107,7 +78,7 @@ export default async function page({
                         border: `1px solid rgba(54, 54, 54, 0.40)`,
                         boxShadow: `0 0px 8px 1px ${withAlpha(
                             "#363636",
-                            0.15
+                            0.15,
                         )}`,
                     }}
                     className={`rounded-[20px] p-6 flex flex-col gap-2 mb-5 lg:mb-0 ${

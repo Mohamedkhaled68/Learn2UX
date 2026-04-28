@@ -1,25 +1,30 @@
 "use client";
 
-import React, { useState, useEffect, FormEvent, ChangeEvent } from "react";
-import axios, { AxiosError } from "axios";
-import Cookies from "js-cookie";
+import React, { useState, FormEvent, ChangeEvent, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { FiEdit2, FiTrash2, FiX } from "react-icons/fi";
-import toast from "react-hot-toast";
 import { Category } from "@/types/Category";
 import { Question } from "@/types/Question";
 import { QuestionFormData } from "@/types/FormData";
 import { QuestionFormErrors } from "@/types/FormErrors";
-import { ApiErrorResponse } from "@/types/ApiResponse";
+import { useGetCategories } from "@/hooks/useGetCategories";
+import { useGetQuestions } from "@/hooks/useGetQuestions";
 import ReactMarkdown from "react-markdown";
 
 const ManageQuestions: React.FC = () => {
+    const { categories: hookCategories, loading: loadingCategories } =
+        useGetCategories();
+    const { questions: hookQuestions, loading: loadingQuestions } =
+        useGetQuestions();
+
     const [questions, setQuestions] = useState<Question[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
-    const [loadingQuestions, setLoadingQuestions] = useState<boolean>(true);
-    const [loadingCategories, setLoadingCategories] = useState<boolean>(true);
     const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
-        null
+        null,
     );
+
+    console.log(hookCategories);
+
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [filterCategory, setFilterCategory] = useState<string>("");
@@ -46,74 +51,37 @@ const ManageQuestions: React.FC = () => {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
-    // Fetch questions and categories on component mount
+    // Sync hook questions to state
     useEffect(() => {
-        fetchQuestions();
-        fetchCategories();
-    }, []);
+        if (!loadingQuestions && hookQuestions.length > 0) {
+            setQuestions(hookQuestions);
+        }
+    }, [hookQuestions, loadingQuestions]);
 
-    // Filter questions based on search and category
+    // Sync hook categories to state
+    useEffect(() => {
+        if (!loadingCategories && hookCategories.length > 0) {
+            setCategories(hookCategories);
+        }
+    }, [hookCategories, loadingCategories]);
+
     const filteredQuestions = questions.filter((question) => {
         const matchesSearch =
             searchQuery.trim() === "" ||
-            question.questionEn
+            question.question_en
                 .toLowerCase()
                 .includes(searchQuery.toLowerCase()) ||
-            question.questionAr.includes(searchQuery) ||
-            question.answerEn
+            question.question_ar.includes(searchQuery) ||
+            question.answer_en
                 .toLowerCase()
                 .includes(searchQuery.toLowerCase()) ||
-            question.answerAr.includes(searchQuery);
+            question.answer_ar.includes(searchQuery);
 
         const matchesCategory =
-            filterCategory === "" || question.categoryId._id === filterCategory;
+            filterCategory === "" || question.category_id === filterCategory;
 
         return matchesSearch && matchesCategory;
     });
-
-    const fetchQuestions = async () => {
-        setLoadingQuestions(true);
-        try {
-            const token = Cookies.get("adminToken");
-            const response = await axios.get<{ data: Question[] }>(
-                "https://learn2ux-backend.vercel.app/api/questions",
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            setQuestions(response.data.data || []);
-        } catch (error) {
-            toast.error("Failed to load questions. Please refresh the page.");
-            setErrorMessage(
-                "Failed to load questions. Please refresh the page."
-            );
-        } finally {
-            setLoadingQuestions(false);
-        }
-    };
-
-    const fetchCategories = async () => {
-        try {
-            const token = Cookies.get("adminToken");
-            const response = await axios.get<{ data: Category[] }>(
-                "https://learn2ux-backend.vercel.app/api/categories",
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            setCategories(response.data.data || []);
-        } catch (error) {
-            toast.error("Failed to load categories. Please refresh the page.");
-        } finally {
-            setLoadingCategories(false);
-        }
-    };
 
     // Handle edit button click
     const handleEditClick = (question: Question) => {
@@ -121,12 +89,15 @@ const ManageQuestions: React.FC = () => {
         console.log(question);
 
         setFormData({
-            categoryId: question.categoryId._id,
-            questionEn: question.questionEn,
-            questionAr: question.questionAr,
-            answerEn: question.answerEn,
-            answerAr: question.answerAr,
-            links: question.links.length > 0 ? question.links : [""],
+            categoryId: question.category_id,
+            questionEn: question.question_en,
+            questionAr: question.question_ar,
+            answerEn: question.answer_en,
+            answerAr: question.answer_ar,
+            links:
+                question.links && question.links.length > 0
+                    ? question.links.map((link: any) => link.url || link)
+                    : [""],
         });
         setIsEditing(true);
         setSuccessMessage("");
@@ -158,7 +129,7 @@ const ManageQuestions: React.FC = () => {
     const handleChange = (
         e: ChangeEvent<
             HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
+        >,
     ): void => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -249,7 +220,7 @@ const ManageQuestions: React.FC = () => {
 
     // Handle update question
     const handleUpdate = async (
-        e: FormEvent<HTMLFormElement>
+        e: FormEvent<HTMLFormElement>,
     ): Promise<void> => {
         e.preventDefault();
 
@@ -263,60 +234,53 @@ const ManageQuestions: React.FC = () => {
         setIsLoading(true);
 
         try {
-            const token = Cookies.get("adminToken");
-
-            if (!token) {
-                setErrorMessage("Authentication required. Please login again.");
-                return;
-            }
+            const supabase = createClient();
 
             // Filter out empty links
             const validLinks = formData.links.filter(
-                (link) => link.trim() !== ""
+                (link) => link.trim() !== "",
             );
 
-            const response = await axios.put(
-                `https://learn2ux-backend.vercel.app/api/questions/${selectedQuestion._id}`,
-                {
-                    categoryId: formData.categoryId,
-                    questionEn: formData.questionEn,
-                    questionAr: formData.questionAr,
-                    answerEn: formData.answerEn,
-                    answerAr: formData.answerAr,
-                    links: validLinks,
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            // Update question
+            const { error: updateError } = await supabase
+                .from("questions")
+                .update({
+                    question_en: formData.questionEn,
+                    question_ar: formData.questionAr,
+                    answer_en: formData.answerEn,
+                    answer_ar: formData.answerAr,
+                    links: validLinks.length > 0 ? validLinks : null,
+                })
+                .eq("id", selectedQuestion.id);
 
-            setSuccessMessage(
-                response.data.message || "Question updated successfully!"
-            );
+            if (updateError) {
+                setErrorMessage(
+                    `Failed to update question: ${updateError.message}`,
+                );
+                setIsLoading(false);
+                return;
+            }
+
+            setSuccessMessage("Question updated successfully!");
 
             // Refresh questions list
-            await fetchQuestions();
+            const { data: updatedQuestions } = await supabase
+                .from("questions")
+                .select("*")
+                .order("created_at", { ascending: false });
+
+            setQuestions(updatedQuestions || []);
 
             // Close edit form after a delay
             setTimeout(() => {
                 handleCancelEdit();
             }, 1500);
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                const axiosError = error as AxiosError<ApiErrorResponse>;
-                const errorMsg =
-                    axiosError.response?.data?.message ||
-                    axiosError.response?.data?.error ||
-                    "Failed to update question. Please try again.";
-                setErrorMessage(errorMsg);
-            } else {
-                setErrorMessage(
-                    "An unexpected error occurred. Please try again."
-                );
-            }
+            setErrorMessage(
+                error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred. Please try again.",
+            );
         } finally {
             setIsLoading(false);
         }
@@ -328,40 +292,36 @@ const ManageQuestions: React.FC = () => {
         setErrorMessage("");
 
         try {
-            const token = Cookies.get("adminToken");
+            const supabase = createClient();
 
-            if (!token) {
-                setErrorMessage("Authentication required. Please login again.");
+            const { error: deleteError } = await supabase
+                .from("questions")
+                .delete()
+                .eq("id", questionId);
+
+            if (deleteError) {
+                setErrorMessage(
+                    `Failed to delete question: ${deleteError.message}`,
+                );
                 return;
             }
-
-            await axios.delete(
-                `https://learn2ux-backend.vercel.app/api/questions/${questionId}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
 
             setSuccessMessage("Question deleted successfully!");
             setDeleteConfirm(null);
 
             // Refresh questions list
-            await fetchQuestions();
+            const { data: updatedQuestions } = await supabase
+                .from("questions")
+                .select("*")
+                .order("created_at", { ascending: false });
+
+            setQuestions(updatedQuestions || []);
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                const axiosError = error as AxiosError<ApiErrorResponse>;
-                const errorMsg =
-                    axiosError.response?.data?.message ||
-                    axiosError.response?.data?.error ||
-                    "Failed to delete question. Please try again.";
-                setErrorMessage(errorMsg);
-            } else {
-                setErrorMessage(
-                    "An unexpected error occurred. Please try again."
-                );
-            }
+            setErrorMessage(
+                error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred. Please try again.",
+            );
         }
     };
 
@@ -404,8 +364,8 @@ const ManageQuestions: React.FC = () => {
                         >
                             <option value="">All Categories</option>
                             {categories.map((category) => (
-                                <option key={category._id} value={category._id}>
-                                    {category.titleEn} / {category.titleAr}
+                                <option key={category.id} value={category.id}>
+                                    {category.title_en} / {category.title_ar}
                                 </option>
                             ))}
                         </select>
@@ -436,7 +396,7 @@ const ManageQuestions: React.FC = () => {
             {successMessage && (
                 <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
                     <svg
-                        className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
+                        className="w-5 h-5 mr-2 mt-0.5 shrink-0"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                     >
@@ -454,7 +414,7 @@ const ManageQuestions: React.FC = () => {
             {errorMessage && (
                 <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
                     <svg
-                        className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
+                        className="w-5 h-5 mr-2 mt-0.5 shrink-0"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                     >
@@ -511,11 +471,11 @@ const ManageQuestions: React.FC = () => {
                                         </option>
                                         {categories.map((category) => (
                                             <option
-                                                key={category._id}
-                                                value={category._id}
+                                                key={category.id}
+                                                value={category.id}
                                             >
-                                                {category.titleEn} /{" "}
-                                                {category.titleAr}
+                                                {category.title_en} /{" "}
+                                                {category.title_ar}
                                             </option>
                                         ))}
                                     </select>
@@ -643,7 +603,7 @@ const ManageQuestions: React.FC = () => {
                                                 onChange={(e) =>
                                                     handleLinkChange(
                                                         index,
-                                                        e.target.value
+                                                        e.target.value,
                                                     )
                                                 }
                                                 disabled={isLoading}
@@ -722,33 +682,40 @@ const ManageQuestions: React.FC = () => {
                 <div className="space-y-4">
                     {filteredQuestions.map((question) => (
                         <div
-                            key={question._id}
+                            key={question.id}
                             className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
                         >
                             <div className="flex items-start justify-between gap-4">
                                 <div className="flex-1">
                                     {/* Category Badge */}
                                     <div className="inline-block mb-2 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-semibold">
-                                        {question.categoryId.titleEn} /{" "}
-                                        {question.categoryId.titleAr}
+                                        {categories.find(
+                                            (c) =>
+                                                c.id === question.category_id,
+                                        )?.title_en || "N/A"}{" "}
+                                        /
+                                        {categories.find(
+                                            (c) =>
+                                                c.id === question.category_id,
+                                        )?.title_ar || "N/A"}
                                     </div>
 
                                     {/* Question */}
                                     <h3 className="text-lg font-semibold mb-2 text-gray-800">
-                                        {question.questionEn}
+                                        {question.question_en}
                                     </h3>
                                     <p
                                         className="text-sm text-gray-600 mb-2"
                                         dir="rtl"
                                     >
-                                        {question.questionAr}
+                                        {question.question_ar}
                                     </p>
 
                                     {/* Answer Preview */}
                                     <div className="bg-gray-50 rounded p-3 mb-2">
                                         <div className="text-sm text-gray-700 line-clamp-2">
                                             <ReactMarkdown>
-                                                {question.answerEn}
+                                                {question.answer_en}
                                             </ReactMarkdown>
                                         </div>
                                     </div>
@@ -767,7 +734,7 @@ const ManageQuestions: React.FC = () => {
                                 </div>
 
                                 {/* Action Buttons */}
-                                <div className="flex gap-2 flex-shrink-0">
+                                <div className="flex gap-2 shrink-0">
                                     <button
                                         onClick={() =>
                                             handleEditClick(question)
@@ -778,11 +745,11 @@ const ManageQuestions: React.FC = () => {
                                     >
                                         <FiEdit2 size={20} />
                                     </button>
-                                    {deleteConfirm === question._id ? (
+                                    {deleteConfirm === question.id ? (
                                         <div className="flex gap-1">
                                             <button
                                                 onClick={() =>
-                                                    handleDelete(question._id)
+                                                    handleDelete(question.id)
                                                 }
                                                 className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                                             >
@@ -800,7 +767,7 @@ const ManageQuestions: React.FC = () => {
                                     ) : (
                                         <button
                                             onClick={() =>
-                                                setDeleteConfirm(question._id)
+                                                setDeleteConfirm(question.id)
                                             }
                                             disabled={isEditing}
                                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

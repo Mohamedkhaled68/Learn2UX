@@ -1,32 +1,17 @@
 "use client";
 
-import React, { useState, FormEvent, ChangeEvent } from "react";
-import axios, { AxiosError } from "axios";
-import Cookies from "js-cookie";
+import React, { useState, FormEvent, ChangeEvent, useRef } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { PiMapTrifoldLight } from "react-icons/pi";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import Image from "next/image";
 import { CategoryFormData } from "@/types/FormData";
 import { CategoryFormErrors } from "@/types/FormErrors";
-import { ApiErrorResponse } from "@/types/ApiResponse";
-
-const withAlpha = (color: string, alpha: number) => {
-    if (color.startsWith("#")) {
-        return `${color}${Math.round(alpha * 255)
-            .toString(16)
-            .padStart(2, "0")}`;
-    }
-
-    const nums = color.match(/\d+/g);
-    if (!nums || nums.length < 3) {
-        // fallback to black if the color string doesn't contain RGB values
-        return `rgba(0, 0, 0, ${alpha})`;
-    }
-
-    return `rgba(${nums.slice(0, 3).join(", ")}, ${alpha})`;
-};
+import { withAlpha } from "@/utils/helpers";
 
 const AddCategory: React.FC = () => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     const [formData, setFormData] = useState<CategoryFormData>({
         titleEn: "",
         titleAr: "",
@@ -56,7 +41,7 @@ const AddCategory: React.FC = () => {
 
     // Handle input changes
     const handleChange = (
-        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     ): void => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -179,7 +164,7 @@ const AddCategory: React.FC = () => {
 
     // Handle form submission
     const handleSubmit = async (
-        e: FormEvent<HTMLFormElement>
+        e: FormEvent<HTMLFormElement>,
     ): Promise<void> => {
         e.preventDefault();
 
@@ -195,50 +180,63 @@ const AddCategory: React.FC = () => {
         setIsLoading(true);
 
         try {
-            const token = Cookies.get("adminToken");
+            const supabase = createClient();
+            let iconUrl = null;
 
-            if (!token) {
-                setErrorMessage("Authentication required. Please login again.");
+            // Upload icon if provided
+            if (iconFile && iconType) {
+                // Get file extension
+                const ext = iconType === "svg" ? "svg" : "png";
+                const fileName = `${Date.now()}-${Math.random()
+                    .toString(36)
+                    .slice(2)}.${ext}`;
+
+                // Upload to Supabase Storage
+                const { error: uploadError } = await supabase.storage
+                    .from("category-icons")
+                    .upload(fileName, iconFile, {
+                        contentType: iconFile.type,
+                    });
+
+                if (uploadError) {
+                    setErrorMessage(
+                        `Failed to upload icon: ${uploadError.message}`,
+                    );
+                    setIsLoading(false);
+                    return;
+                }
+
+                // Get public URL
+                const { data: publicUrlData } = supabase.storage
+                    .from("category-icons")
+                    .getPublicUrl(fileName);
+
+                iconUrl = publicUrlData?.publicUrl;
+            }
+
+            // Insert category into database
+            const { error: insertError } = await supabase
+                .from("categories")
+                .insert({
+                    title_en: formData.titleEn,
+                    title_ar: formData.titleAr,
+                    description_en: formData.descriptionEn,
+                    description_ar: formData.descriptionAr,
+                    icon_url: iconUrl,
+                    text_color: formData.textColor,
+                    border_color: formData.borderColor,
+                });
+
+            if (insertError) {
+                setErrorMessage(
+                    `Failed to add category: ${insertError.message}`,
+                );
+                setIsLoading(false);
                 return;
             }
 
-            // Create FormData for file upload
-            const formDataToSend = new FormData();
-            formDataToSend.append("titleEn", formData.titleEn);
-            formDataToSend.append("titleAr", formData.titleAr);
-            formDataToSend.append("descriptionEn", formData.descriptionEn);
-            formDataToSend.append("descriptionAr", formData.descriptionAr);
-            formDataToSend.append("textColor", formData.textColor);
-            formDataToSend.append("borderColor", formData.borderColor);
-
-            if (iconFile && iconType) {
-                formDataToSend.append("icon", iconFile);
-                formDataToSend.append("iconType", iconType);
-            }
-            const response = await axios.post(
-                "https://learn2ux-backend.vercel.app/api/categories",
-                {
-                    titleEn: formData.titleEn,
-                    titleAr: formData.titleAr,
-                    descriptionEn: formData.descriptionEn,
-                    descriptionAr: formData.descriptionAr,
-                    textColor: formData.textColor,
-                    borderColor: formData.borderColor,
-                    icon: iconPreview, // base64 encoded icon
-                    iconType: iconType,
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
             // Success
-            setSuccessMessage(
-                response.data.message || "Category added successfully!"
-            );
+            setSuccessMessage("Category added successfully!");
 
             // Clear form fields
             setFormData({
@@ -254,6 +252,9 @@ const AddCategory: React.FC = () => {
             setIconFile(null);
             setIconPreview("");
             setIconType("");
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
 
             // Clear errors
             setErrors({
@@ -266,19 +267,11 @@ const AddCategory: React.FC = () => {
                 icon: "",
             });
         } catch (error) {
-            // Handle errors
-            if (axios.isAxiosError(error)) {
-                const axiosError = error as AxiosError<ApiErrorResponse>;
-                const errorMsg =
-                    axiosError.response?.data?.message ||
-                    axiosError.response?.data?.error ||
-                    "Failed to add category. Please try again.";
-                setErrorMessage(errorMsg);
-            } else {
-                setErrorMessage(
-                    "An unexpected error occurred. Please try again."
-                );
-            }
+            setErrorMessage(
+                error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred. Please try again.",
+            );
         } finally {
             setIsLoading(false);
         }
@@ -294,7 +287,7 @@ const AddCategory: React.FC = () => {
             {successMessage && (
                 <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
                     <svg
-                        className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
+                        className="w-5 h-5 mr-2 mt-0.5 shrink-0"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                     >
@@ -312,7 +305,7 @@ const AddCategory: React.FC = () => {
             {errorMessage && (
                 <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
                     <svg
-                        className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
+                        className="w-5 h-5 mr-2 mt-0.5 shrink-0"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                     >
@@ -550,6 +543,7 @@ const AddCategory: React.FC = () => {
                         <div className="flex gap-3 items-start">
                             <div className="flex-1">
                                 <input
+                                    ref={fileInputRef}
                                     type="file"
                                     id="icon"
                                     name="icon"
@@ -627,22 +621,22 @@ const AddCategory: React.FC = () => {
                 </form>
                 {/* Category Preview */}
 
-                <div className="flex flex-col gap-6 pt-2 lg:w-[400px]">
+                <div className="flex flex-col gap-6 pt-2 lg:w-100">
                     <h3 className="text-lg font-semibold text-gray-700">
                         Preview
                     </h3>
 
                     {/* English Preview */}
                     <div
-                        className={`w-full p-4 2xl:p-[30px] rounded-[16px] flex flex-col gap-2 2xl:gap-[15px] bg-white select-none`}
+                        className={`w-full p-4 2xl:p-7.5 rounded-2xl flex flex-col gap-2 2xl:gap-3.75 bg-white select-none`}
                         style={{
                             border: `1px solid ${withAlpha(
                                 formData.borderColor,
-                                0.4
+                                0.4,
                             )}`,
                             boxShadow: `0 0px 10px 1px ${withAlpha(
                                 formData.borderColor,
-                                0.15
+                                0.15,
                             )}`,
                         }}
                     >
@@ -685,7 +679,7 @@ const AddCategory: React.FC = () => {
                                     "Category description"}
                             </p>
                         </div>
-                        <div className="w-fit p-1 border-t-[1px] border-black">
+                        <div className="w-fit p-1 border-t border-black">
                             20 answers
                         </div>
                     </div>
@@ -695,14 +689,14 @@ const AddCategory: React.FC = () => {
                         style={{
                             border: `1px solid ${withAlpha(
                                 formData.borderColor,
-                                0.4
+                                0.4,
                             )}`,
                             boxShadow: `0 0px 10px 1px ${withAlpha(
                                 formData.borderColor,
-                                0.15
+                                0.15,
                             )}`,
                         }}
-                        className={`w-full p-4 2xl:p-[30px] rounded-[16px] flex flex-col gap-2 2xl:gap-[15px] bg-white select-none font-noto`}
+                        className={`w-full p-4 2xl:p-7.5 rounded-2xl flex flex-col gap-2 2xl:gap-3.75 bg-white select-none font-noto`}
                     >
                         <div className="flex flex-row-reverse items-center justify-between w-full">
                             <div
@@ -743,7 +737,7 @@ const AddCategory: React.FC = () => {
                             >
                                 {formData.descriptionAr || "وصف الفئة"}
                             </p>
-                            <div className="w-fit mt-3 p-1 border-t-[1px] border-black">
+                            <div className="w-fit mt-3 p-1 border-t border-black">
                                 20 إجابة
                             </div>
                         </div>

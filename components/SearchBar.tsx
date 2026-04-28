@@ -36,7 +36,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                             alt={categoryName || "Category"}
                             width={22}
                             height={22}
-                            className="object-contain w-[25px] h-[25px] 2xl:w-[35px] 2xl:h-[35px]"
+                            className="object-contain w-6.25 h-6.25 2xl:w-8.75 2xl:h-8.75"
                             unoptimized
                         />
                     ) : (

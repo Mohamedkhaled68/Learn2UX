@@ -1,15 +1,13 @@
-import { Category } from "./Category";
-
 interface Question {
-    _id: string;
-    categoryId: Category;
-    questionEn: string;
-    questionAr: string;
-    answerEn: string;
-    answerAr: string;
+    id: string;
+    category_id: string;
+    question_en: string;
+    question_ar: string;
+    answer_en: string;
+    answer_ar: string;
     links: string[];
-    createdAt: string;
-    updatedAt: string;
+    created_at: string;
+    updated_at: string;
 }
 
 export { Question };

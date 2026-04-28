@@ -1,21 +1,20 @@
 "use client";
 
-import React, { useState, useEffect, FormEvent, ChangeEvent } from "react";
-import axios, { AxiosError } from "axios";
-import Cookies from "js-cookie";
+import React, { useState, FormEvent, ChangeEvent } from "react";
+import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
 import { FiEdit2, FiTrash2, FiX } from "react-icons/fi";
-import toast from "react-hot-toast";
 import { Category } from "@/types/Category";
 import { CategoryFormData } from "@/types/FormData";
 import { CategoryFormErrors } from "@/types/FormErrors";
-import { ApiErrorResponse } from "@/types/ApiResponse";
+import { useGetCategories } from "@/hooks/useGetCategories";
 
 const ManageCategories: React.FC = () => {
+    const { categories: initialCategories, loading: loadingCategories } =
+        useGetCategories();
     const [categories, setCategories] = useState<Category[]>([]);
-    const [loadingCategories, setLoadingCategories] = useState<boolean>(true);
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-        null
+        null,
     );
     const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -47,48 +46,26 @@ const ManageCategories: React.FC = () => {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
-    // Fetch categories on component mount
-    useEffect(() => {
-        fetchCategories();
-    }, []);
-
-    const fetchCategories = async () => {
-        setLoadingCategories(true);
-        try {
-            const token = Cookies.get("adminToken");
-            const response = await axios.get<{ data: Category[] }>(
-                "https://learn2ux-backend.vercel.app/api/categories",
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            setCategories(response.data.data || []);
-        } catch (error) {
-            toast.error("Failed to load categories. Please refresh the page.");
-            setErrorMessage(
-                "Failed to load categories. Please refresh the page."
-            );
-        } finally {
-            setLoadingCategories(false);
+    // Sync hook categories to state
+    React.useEffect(() => {
+        if (!loadingCategories && initialCategories.length > 0) {
+            setCategories(initialCategories);
         }
-    };
+    }, [initialCategories, loadingCategories]);
 
     // Handle edit button click
     const handleEditClick = (category: Category) => {
         setSelectedCategory(category);
         setFormData({
-            titleEn: category.titleEn,
-            titleAr: category.titleAr,
-            descriptionEn: category.descriptionEn,
-            descriptionAr: category.descriptionAr,
-            textColor: category.textColor,
-            borderColor: category.borderColor,
+            titleEn: category.title_en,
+            titleAr: category.title_ar,
+            descriptionEn: category.description_en,
+            descriptionAr: category.description_ar,
+            textColor: category.text_color,
+            borderColor: category.border_color,
         });
-        setIconPreview(category.icon);
-        setIconType(category.iconType);
+        setIconPreview(category.icon_url || "");
+        setIconType("");
         setIsEditing(true);
         setSuccessMessage("");
         setErrorMessage("");
@@ -122,7 +99,7 @@ const ManageCategories: React.FC = () => {
 
     // Handle input changes
     const handleChange = (
-        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     ): void => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -238,7 +215,7 @@ const ManageCategories: React.FC = () => {
 
     // Handle update category
     const handleUpdate = async (
-        e: FormEvent<HTMLFormElement>
+        e: FormEvent<HTMLFormElement>,
     ): Promise<void> => {
         e.preventDefault();
 
@@ -252,57 +229,77 @@ const ManageCategories: React.FC = () => {
         setIsLoading(true);
 
         try {
-            const token = Cookies.get("adminToken");
+            const supabase = createClient();
+            let iconUrl = selectedCategory.icon_url;
 
-            if (!token) {
-                setErrorMessage("Authentication required. Please login again.");
+            // Upload new icon if provided
+            if (iconFile && iconType) {
+                const ext = iconType === "svg" ? "svg" : "png";
+                const fileName = `${Date.now()}-${Math.random()
+                    .toString(36)
+                    .slice(2)}.${ext}`;
+
+                const { error: uploadError } = await supabase.storage
+                    .from("category-icons")
+                    .upload(fileName, iconFile, {
+                        contentType: iconFile.type,
+                    });
+
+                if (uploadError) {
+                    setErrorMessage(
+                        `Failed to upload icon: ${uploadError.message}`,
+                    );
+                    setIsLoading(false);
+                    return;
+                }
+
+                const { data: publicUrlData } = supabase.storage
+                    .from("category-icons")
+                    .getPublicUrl(fileName);
+
+                iconUrl = publicUrlData?.publicUrl;
+            }
+
+            // Update category in database
+            const { error: updateError } = await supabase
+                .from("categories_with_count")
+                .update({
+                    title_en: formData.titleEn,
+                    title_ar: formData.titleAr,
+                    description_en: formData.descriptionEn,
+                    description_ar: formData.descriptionAr,
+                    icon_url: iconUrl,
+                })
+                .eq("id", selectedCategory.id);
+
+            if (updateError) {
+                setErrorMessage(
+                    `Failed to update category: ${updateError.message}`,
+                );
+                setIsLoading(false);
                 return;
             }
 
-            const response = await axios.put(
-                `https://learn2ux-backend.vercel.app/api/categories/${selectedCategory._id}`,
-                {
-                    titleEn: formData.titleEn,
-                    titleAr: formData.titleAr,
-                    descriptionEn: formData.descriptionEn,
-                    descriptionAr: formData.descriptionAr,
-                    textColor: formData.textColor,
-                    borderColor: formData.borderColor,
-                    icon: iconPreview,
-                    iconType: iconType,
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            setSuccessMessage(
-                response.data.message || "Category updated successfully!"
-            );
+            setSuccessMessage("Category updated successfully!");
 
             // Refresh categories list
-            await fetchCategories();
+            const { data: updatedCategories } = await supabase
+                .from("categories_with_count")
+                .select("*")
+                .order("created_at", { ascending: false });
+
+            setCategories(updatedCategories || []);
 
             // Close edit form after a delay
             setTimeout(() => {
                 handleCancelEdit();
             }, 1500);
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                const axiosError = error as AxiosError<ApiErrorResponse>;
-                const errorMsg =
-                    axiosError.response?.data?.message ||
-                    axiosError.response?.data?.error ||
-                    "Failed to update category. Please try again.";
-                setErrorMessage(errorMsg);
-            } else {
-                setErrorMessage(
-                    "An unexpected error occurred. Please try again."
-                );
-            }
+            setErrorMessage(
+                error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred. Please try again.",
+            );
         } finally {
             setIsLoading(false);
         }
@@ -314,40 +311,36 @@ const ManageCategories: React.FC = () => {
         setErrorMessage("");
 
         try {
-            const token = Cookies.get("adminToken");
+            const supabase = createClient();
 
-            if (!token) {
-                setErrorMessage("Authentication required. Please login again.");
+            const { error: deleteError } = await supabase
+                .from("categories_with_count")
+                .delete()
+                .eq("id", categoryId);
+
+            if (deleteError) {
+                setErrorMessage(
+                    `Failed to delete category: ${deleteError.message}`,
+                );
                 return;
             }
-
-            await axios.delete(
-                `https://learn2ux-backend.vercel.app/api/categories/${categoryId}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
 
             setSuccessMessage("Category deleted successfully!");
             setDeleteConfirm(null);
 
             // Refresh categories list
-            await fetchCategories();
+            const { data: updatedCategories } = await supabase
+                .from("categories_with_count")
+                .select("*")
+                .order("created_at", { ascending: false });
+
+            setCategories(updatedCategories || []);
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                const axiosError = error as AxiosError<ApiErrorResponse>;
-                const errorMsg =
-                    axiosError.response?.data?.message ||
-                    axiosError.response?.data?.error ||
-                    "Failed to delete category. Please try again.";
-                setErrorMessage(errorMsg);
-            } else {
-                setErrorMessage(
-                    "An unexpected error occurred. Please try again."
-                );
-            }
+            setErrorMessage(
+                error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred. Please try again.",
+            );
         }
     };
 
@@ -361,7 +354,7 @@ const ManageCategories: React.FC = () => {
             {successMessage && (
                 <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
                     <svg
-                        className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
+                        className="w-5 h-5 mr-2 mt-0.5 shrink-0"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                     >
@@ -379,7 +372,7 @@ const ManageCategories: React.FC = () => {
             {errorMessage && (
                 <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
                     <svg
-                        className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
+                        className="w-5 h-5 mr-2 mt-0.5 shrink-0"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                     >
@@ -658,75 +651,45 @@ const ManageCategories: React.FC = () => {
                 <div className="space-y-4">
                     {categories.map((category) => (
                         <div
-                            key={category._id}
+                            key={category.id}
                             className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
-                            style={{ borderColor: category.borderColor }}
                         >
                             <div className="flex items-start justify-between gap-4">
                                 <div className="flex items-start gap-4 flex-1">
                                     {/* Icon */}
-                                    <div className="flex-shrink-0">
-                                        <Image
-                                            src={category.icon}
-                                            alt={category.titleEn}
-                                            width={50}
-                                            height={50}
-                                            className="object-contain"
-                                            unoptimized
-                                        />
+                                    <div className="shrink-0">
+                                        {category.icon_url && (
+                                            <Image
+                                                src={category.icon_url}
+                                                alt={category.title_en}
+                                                width={50}
+                                                height={50}
+                                                className="object-contain"
+                                                unoptimized
+                                            />
+                                        )}
                                     </div>
 
                                     {/* Content */}
                                     <div className="flex-1">
-                                        <h3
-                                            className="text-lg font-semibold mb-1"
-                                            style={{
-                                                color: category.textColor,
-                                            }}
-                                        >
-                                            {category.titleEn} /{" "}
-                                            {category.titleAr}
+                                        <h3 className="text-lg font-semibold mb-1">
+                                            {category.title_en} /{" "}
+                                            {category.title_ar}
                                         </h3>
                                         <p className="text-sm text-gray-600 mb-2">
-                                            {category.descriptionEn}
+                                            {category.description_en}
                                         </p>
                                         <p
                                             className="text-sm text-gray-600 mb-2"
                                             dir="rtl"
                                         >
-                                            {category.descriptionAr}
+                                            {category.description_ar}
                                         </p>
-                                        <div className="flex gap-4 text-xs text-gray-500">
-                                            <span>
-                                                Text:{" "}
-                                                <span
-                                                    style={{
-                                                        color: category.textColor,
-                                                    }}
-                                                >
-                                                    {category.textColor}
-                                                </span>
-                                            </span>
-                                            <span>
-                                                Border:{" "}
-                                                <span
-                                                    style={{
-                                                        color: category.borderColor,
-                                                    }}
-                                                >
-                                                    {category.borderColor}
-                                                </span>
-                                            </span>
-                                            <span>
-                                                Type:{" "}
-                                                {category.iconType.toUpperCase()}
-                                            </span>
-                                        </div>
                                     </div>
                                 </div>
 
                                 {/* Action Buttons */}
-                                <div className="flex gap-2 flex-shrink-0">
+                                <div className="flex gap-2 shrink-0">
                                     <button
                                         onClick={() =>
                                             handleEditClick(category)
@@ -737,11 +700,11 @@ const ManageCategories: React.FC = () => {
                                     >
                                         <FiEdit2 size={20} />
                                     </button>
-                                    {deleteConfirm === category._id ? (
+                                    {deleteConfirm === category.id ? (
                                         <div className="flex gap-1">
                                             <button
                                                 onClick={() =>
-                                                    handleDelete(category._id)
+                                                    handleDelete(category.id)
                                                 }
                                                 className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                                             >
@@ -759,7 +722,7 @@ const ManageCategories: React.FC = () => {
                                     ) : (
                                         <button
                                             onClick={() =>
-                                                setDeleteConfirm(category._id)
+                                                setDeleteConfirm(category.id)
                                             }
                                             disabled={isEditing}
                                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

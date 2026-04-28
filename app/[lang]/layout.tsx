@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import PageTransition from "@/components/PageTransition";
-import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Script from "next/script";
+import "./globals.css";
 
 export const metadata: Metadata = {
     title: "Learn2ux",

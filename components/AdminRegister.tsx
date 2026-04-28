@@ -72,7 +72,7 @@ const AdminRegister: React.FC = () => {
 
     // Handle form submission
     const handleSubmit = async (
-        e: FormEvent<HTMLFormElement>
+        e: FormEvent<HTMLFormElement>,
     ): Promise<void> => {
         e.preventDefault();
 
@@ -98,12 +98,12 @@ const AdminRegister: React.FC = () => {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                }
+                },
             );
 
             // Success
             setSuccessMessage(
-                response.data.message || "Admin registered successfully!"
+                response.data.message || "Admin registered successfully!",
             );
 
             // Clear form fields
@@ -128,7 +128,7 @@ const AdminRegister: React.FC = () => {
                 setErrorMessage(errorMsg);
             } else {
                 setErrorMessage(
-                    "An unexpected error occurred. Please try again."
+                    "An unexpected error occurred. Please try again.",
                 );
             }
         } finally {
@@ -137,7 +137,7 @@ const AdminRegister: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-8">
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 px-4 py-8">
             <div className="w-full max-w-md">
                 <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
                     {/* Header */}
@@ -154,7 +154,7 @@ const AdminRegister: React.FC = () => {
                     {successMessage && (
                         <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
                             <svg
-                                className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
+                                className="w-5 h-5 mr-2 mt-0.5 shrink-0"
                                 fill="currentColor"
                                 viewBox="0 0 20 20"
                             >
@@ -172,7 +172,7 @@ const AdminRegister: React.FC = () => {
                     {errorMessage && (
                         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
                             <svg
-                                className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
+                                className="w-5 h-5 mr-2 mt-0.5 shrink-0"
                                 fill="currentColor"
                                 viewBox="0 0 20 20"
                             >

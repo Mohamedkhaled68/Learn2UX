@@ -1,17 +1,14 @@
 "use client";
 
 import React, { useState, useEffect, FormEvent, ChangeEvent } from "react";
-import axios, { AxiosError } from "axios";
-import Cookies from "js-cookie";
-import toast from "react-hot-toast";
+import { createClient } from "@/lib/supabase/client";
 import { QuestionFormData } from "@/types/FormData";
 import { QuestionFormErrors } from "@/types/FormErrors";
 import { Category } from "@/types/Category";
-import { ApiErrorResponse } from "@/types/ApiResponse";
 
 const AddQuestion: React.FC = () => {
     const [categories, setCategories] = useState<Category[]>([]);
-    const [loadingCategories, setLoadingCategories] = useState<boolean>(true);
+    const [loadingCategories, setLoadingCategories] = useState(true);
 
     const [formData, setFormData] = useState<QuestionFormData>({
         categoryId: "",
@@ -34,88 +31,55 @@ const AddQuestion: React.FC = () => {
     const [successMessage, setSuccessMessage] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string>("");
 
-    // Fetch categories on component mount
+    // Fetch categories from Supabase
     useEffect(() => {
+        const fetchCategories = async () => {
+            const supabase = createClient();
+            const { data, error } = await supabase
+                .from("categories_with_count")
+                .select("*")
+                .order("created_at", { ascending: false });
+
+            if (!error && data) setCategories(data);
+            setLoadingCategories(false);
+        };
+
         fetchCategories();
     }, []);
 
-    const fetchCategories = async () => {
-        try {
-            const token = Cookies.get("adminToken");
-            const response = await axios.get(
-                "https://learn2ux-backend.vercel.app/api/categories",
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            setCategories(response.data.data);
-        } catch (error) {
-            toast.error("Failed to load categories. Please refresh the page.");
-            setErrorMessage(
-                "Failed to load categories. Please refresh the page."
-            );
-        } finally {
-            setLoadingCategories(false);
-        }
-    };
-
-    // Handle input changes
     const handleChange = (
         e: ChangeEvent<
             HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
+        >,
     ): void => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-
-        // Clear error for this field when user starts typing
+        setFormData((prev) => ({ ...prev, [name]: value }));
         if (errors[name as keyof QuestionFormErrors]) {
-            setErrors((prev: QuestionFormErrors) => ({
-                ...prev,
-                [name]: "",
-            }));
+            setErrors((prev) => ({ ...prev, [name]: "" }));
         }
-
-        // Clear success/error messages when user starts typing
         if (successMessage) setSuccessMessage("");
         if (errorMessage) setErrorMessage("");
     };
 
-    // Handle link changes
     const handleLinkChange = (index: number, value: string): void => {
         const newLinks = [...formData.links];
         newLinks[index] = value;
-        setFormData((prev) => ({
-            ...prev,
-            links: newLinks,
-        }));
+        setFormData((prev) => ({ ...prev, links: newLinks }));
     };
 
-    // Add new link field
     const addLinkField = (): void => {
-        setFormData((prev) => ({
-            ...prev,
-            links: [...prev.links, ""],
-        }));
+        setFormData((prev) => ({ ...prev, links: [...prev.links, ""] }));
     };
 
-    // Remove link field
     const removeLinkField = (index: number): void => {
         if (formData.links.length > 1) {
-            const newLinks = formData.links.filter((_, i) => i !== index);
             setFormData((prev) => ({
                 ...prev,
-                links: newLinks,
+                links: prev.links.filter((_, i) => i !== index),
             }));
         }
     };
 
-    // Validate form fields
     const validateForm = (): boolean => {
         const newErrors: QuestionFormErrors = {
             categoryId: "",
@@ -124,29 +88,24 @@ const AddQuestion: React.FC = () => {
             answerEn: "",
             answerAr: "",
         };
-
         let isValid = true;
 
         if (!formData.categoryId) {
             newErrors.categoryId = "Please select a category";
             isValid = false;
         }
-
         if (!formData.questionEn.trim()) {
             newErrors.questionEn = "English question is required";
             isValid = false;
         }
-
         if (!formData.questionAr.trim()) {
             newErrors.questionAr = "Arabic question is required";
             isValid = false;
         }
-
         if (!formData.answerEn.trim()) {
             newErrors.answerEn = "English answer is required";
             isValid = false;
         }
-
         if (!formData.answerAr.trim()) {
             newErrors.answerAr = "Arabic answer is required";
             isValid = false;
@@ -156,60 +115,56 @@ const AddQuestion: React.FC = () => {
         return isValid;
     };
 
-    // Handle form submission
     const handleSubmit = async (
-        e: FormEvent<HTMLFormElement>
+        e: FormEvent<HTMLFormElement>,
     ): Promise<void> => {
         e.preventDefault();
-
-        // Clear previous messages
         setSuccessMessage("");
         setErrorMessage("");
 
-        // Validate form
-        if (!validateForm()) {
-            return;
-        }
+        if (!validateForm()) return;
 
         setIsLoading(true);
 
         try {
-            const token = Cookies.get("adminToken");
-
-            if (!token) {
-                setErrorMessage("Authentication required. Please login again.");
-                return;
-            }
-
-            // Filter out empty links
+            const supabase = createClient();
             const validLinks = formData.links.filter(
-                (link) => link.trim() !== ""
+                (link) => link.trim() !== "",
             );
 
-            const response = await axios.post(
-                "https://learn2ux-backend.vercel.app/api/questions",
-                {
-                    categoryId: formData.categoryId,
-                    questionEn: formData.questionEn,
-                    questionAr: formData.questionAr,
-                    answerEn: formData.answerEn,
-                    answerAr: formData.answerAr,
-                    links: validLinks.length > 0 ? validLinks : undefined,
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            // Insert question
+            const { data: question, error: questionError } = await supabase
+                .from("questions")
+                .insert({
+                    category_id: formData.categoryId,
+                    question_en: formData.questionEn,
+                    question_ar: formData.questionAr,
+                    answer_en: formData.answerEn,
+                    answer_ar: formData.answerAr,
+                    links: validLinks,
+                })
+                .select("id")
+                .single();
 
-            // Success
-            setSuccessMessage(
-                response.data.message || "Question added successfully!"
-            );
+            if (questionError) throw new Error(questionError.message);
 
-            // Clear form fields
+            // Insert links if any
+            // if (validLinks.length > 0) {
+            //     const linksPayload = validLinks.map((url) => ({
+            //         question_id: question.id,
+            //         url,
+            //         title_en: "",
+            //         title_ar: "",
+            //     }));
+
+            //     const { error: linksError } = await supabase
+            //         .from("links")
+            //         .insert(linksPayload);
+
+            //     if (linksError) throw new Error(linksError.message);
+            // }
+
+            setSuccessMessage("Question added successfully!");
             setFormData({
                 categoryId: "",
                 questionEn: "",
@@ -218,8 +173,6 @@ const AddQuestion: React.FC = () => {
                 answerAr: "",
                 links: [""],
             });
-
-            // Clear errors
             setErrors({
                 categoryId: "",
                 questionEn: "",
@@ -228,19 +181,11 @@ const AddQuestion: React.FC = () => {
                 answerAr: "",
             });
         } catch (error) {
-            // Handle errors
-            if (axios.isAxiosError(error)) {
-                const axiosError = error as AxiosError<ApiErrorResponse>;
-                const errorMsg =
-                    axiosError.response?.data?.message ||
-                    axiosError.response?.data?.error ||
-                    "Failed to add question. Please try again.";
-                setErrorMessage(errorMsg);
-            } else {
-                setErrorMessage(
-                    "An unexpected error occurred. Please try again."
-                );
-            }
+            setErrorMessage(
+                error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred. Please try again.",
+            );
         } finally {
             setIsLoading(false);
         }
@@ -252,11 +197,10 @@ const AddQuestion: React.FC = () => {
                 Add New Question
             </h2>
 
-            {/* Success Message */}
             {successMessage && (
                 <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
                     <svg
-                        className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
+                        className="w-5 h-5 mr-2 mt-0.5 shrink-0"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                     >
@@ -270,11 +214,10 @@ const AddQuestion: React.FC = () => {
                 </div>
             )}
 
-            {/* Error Message */}
             {errorMessage && (
                 <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
                     <svg
-                        className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
+                        className="w-5 h-5 mr-2 mt-0.5 shrink-0"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                     >
@@ -288,7 +231,6 @@ const AddQuestion: React.FC = () => {
                 </div>
             )}
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Category Selection */}
                 <div>
@@ -317,8 +259,8 @@ const AddQuestion: React.FC = () => {
                         >
                             <option value="">Select a category</option>
                             {categories.map((category) => (
-                                <option key={category._id} value={category._id}>
-                                    {category.titleEn} / {category.titleAr}
+                                <option key={category.id} value={category.id}>
+                                    {category.title_en} / {category.title_ar}
                                 </option>
                             ))}
                         </select>
@@ -345,11 +287,7 @@ const AddQuestion: React.FC = () => {
                         onChange={handleChange}
                         disabled={isLoading}
                         rows={3}
-                        className={`w-full px-4 py-3 rounded-lg border ${
-                            errors.questionEn
-                                ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                                : "border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
-                        } focus:outline-none focus:ring-2 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed resize-none`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.questionEn ? "border-red-300 focus:ring-red-500 focus:border-red-500" : "border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"} focus:outline-none focus:ring-2 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed resize-none`}
                         placeholder="Enter question in English"
                     />
                     {errors.questionEn && (
@@ -375,11 +313,7 @@ const AddQuestion: React.FC = () => {
                         disabled={isLoading}
                         dir="rtl"
                         rows={3}
-                        className={`w-full px-4 py-3 rounded-lg border ${
-                            errors.questionAr
-                                ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                                : "border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
-                        } focus:outline-none focus:ring-2 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed resize-none`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.questionAr ? "border-red-300 focus:ring-red-500 focus:border-red-500" : "border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"} focus:outline-none focus:ring-2 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed resize-none`}
                         placeholder="أدخل السؤال بالعربية"
                     />
                     {errors.questionAr && (
@@ -404,11 +338,7 @@ const AddQuestion: React.FC = () => {
                         onChange={handleChange}
                         placeholder="Enter answer in English"
                         rows={5}
-                        className={`w-full px-4 py-3 rounded-lg border ${
-                            errors.answerEn
-                                ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                                : "border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
-                        } focus:outline-none focus:ring-2 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.answerEn ? "border-red-300 focus:ring-red-500 focus:border-red-500" : "border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"} focus:outline-none focus:ring-2 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed`}
                         disabled={isLoading}
                     />
                     {errors.answerEn && (
@@ -434,11 +364,7 @@ const AddQuestion: React.FC = () => {
                         placeholder="أدخل الإجابة بالعربية"
                         rows={5}
                         dir="rtl"
-                        className={`w-full px-4 py-3 rounded-lg border ${
-                            errors.answerAr
-                                ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                                : "border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
-                        } focus:outline-none focus:ring-2 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.answerAr ? "border-red-300 focus:ring-red-500 focus:border-red-500" : "border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"} focus:outline-none focus:ring-2 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed`}
                         disabled={isLoading}
                     />
                     {errors.answerAr && (
@@ -493,11 +419,7 @@ const AddQuestion: React.FC = () => {
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-all duration-200 ${
-                        isLoading
-                            ? "bg-indigo-400 cursor-not-allowed"
-                            : "bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98]"
-                    } focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-md`}
+                    className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-all duration-200 ${isLoading ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98]"} focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-md`}
                 >
                     {isLoading ? (
                         <span className="flex items-center justify-center">

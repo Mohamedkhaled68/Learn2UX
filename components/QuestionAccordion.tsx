@@ -37,7 +37,7 @@ const QuestionAccordion: React.FC<QuestionAccordionProps> = ({
                 </div>
 
                 {/* Expand/Collapse Icon */}
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                     {isOpen ? (
                         <FiChevronUp
                             size={24}

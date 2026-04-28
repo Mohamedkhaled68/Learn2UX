@@ -5,47 +5,24 @@ import Link from "next/link";
 import { Question } from "@/types/Question";
 import { Category } from "@/types/Category";
 import toast from "react-hot-toast";
+import { createClient } from "@/lib/supabase/server";
 
 // Force dynamic rendering
 export const dynamic = "force-dynamic";
 
-async function getQuestions(): Promise<Question[]> {
-    try {
-        const response = await fetch(
-            "https://learn2ux-backend.vercel.app/api/questions",
-            {
-                cache: "force-cache",
-                next: { revalidate: 60 }, // Revalidate every 60 seconds
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch questions");
-        }
-
-        const data = await response.json();
-        return data.data || [];
-    } catch (error) {
-        toast.error("Failed to fetch questions");
-        return [];
-    }
-}
-
 async function getCategoryById(categoryId: string) {
     try {
-        const response = await fetch(
-            `https://learn2ux-backend.vercel.app/api/categories/${categoryId}`,
-            {
-                cache: "no-store", // Server-render on demand
-            }
-        );
+        const supabase = await createClient();
 
-        if (!response.ok) {
-            return null;
-        }
+        const { data, error } = await supabase
+            .from("categories_with_count")
+            .select("*")
+            .eq("id", categoryId)
+            .single();
 
-        const data = await response.json();
-        return data.data || null;
+        if (error) return null;
+
+        return data;
     } catch (error) {
         toast.error("Failed to fetch category");
         return null;
@@ -59,12 +36,21 @@ export default async function page({
 }) {
     const { lang, title: categoryId } = await params;
     const dictionary = await getDictionary(lang);
-    const allQuestions = await getQuestions();
     const category = await getCategoryById(categoryId);
 
+    console.log(categoryId);
+
+    const supabase = await createClient();
+    const { data: questions } = await supabase
+        .from("questions")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    console.log(questions);
+
     // Filter questions by category ID
-    const categoryQuestions = allQuestions.filter(
-        (question) => question.categoryId._id === categoryId
+    const categoryQuestions = questions?.filter(
+        (question) => question.category_id === categoryId,
     );
 
     if (!category) {
@@ -97,21 +83,21 @@ export default async function page({
             <div className="px-4 py-4">
                 <SearchBar
                     categoryName={
-                        lang === "en" ? category.titleEn : category.titleAr
+                        lang === "en" ? category.title_en : category.title_ar
                     }
-                    categoryIcon={category.icon}
-                    categoryColor={category.textColor}
+                    categoryIcon={category.icon_url}
+                    categoryColor={category.text_color}
                     lang={lang}
                 />
             </div>
             <div className="w-full mx-auto xl:px-4 py-8">
                 {/* Questions List */}
-                {categoryQuestions.length > 0 ? (
+                {categoryQuestions && categoryQuestions.length > 0 ? (
                     <QuestionsList
                         questions={categoryQuestions}
                         lang={lang}
-                        borderColor={category.borderColor}
-                        textColor={category.textColor}
+                        borderColor={category.border_color}
+                        textColor={category.text_color}
                     />
                 ) : (
                     <div className="bg-white rounded-xl shadow-md p-12 text-center">

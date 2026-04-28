@@ -27,14 +27,14 @@ const QuestionsList: React.FC<QuestionsListProps> = ({
         <div className="space-y-4">
             {questions.map((question, index) => (
                 <QuestionAccordion
-                    key={question._id}
+                    key={question.id}
                     question={
                         lang === "en"
-                            ? question.questionEn
-                            : question.questionAr
+                            ? question.question_en
+                            : question.question_ar
                     }
                     answer={
-                        lang === "en" ? question.answerEn : question.answerAr
+                        lang === "en" ? question.answer_en : question.answer_ar
                     }
                     links={question.links}
                     index={index}

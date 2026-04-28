@@ -1,27 +1,13 @@
 "use client";
 import Link from "next/link";
-import { ReactNode, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { motion } from "framer-motion";
 import { CategoryHomeBtnProps } from "@/types/ComponentProps";
 import { useRouter } from "next/navigation";
 import Spinner from "./Spinner";
+import { withAlpha } from "@/utils/helpers";
 
-const withAlpha = (color: string, alpha: number) => {
-    if (color.startsWith("#")) {
-        return `${color}${Math.round(alpha * 255)
-            .toString(16)
-            .padStart(2, "0")}`;
-    }
-
-    const nums = color.match(/\d+/g);
-    if (!nums || nums.length < 3) {
-        // fallback to black if the color string doesn't contain RGB values
-        return `rgba(0, 0, 0, ${alpha})`;
-    }
-
-    return `rgba(${nums.slice(0, 3).join(", ")}, ${alpha})`;
-};
 const CategoryHomeBtn = ({
     title,
     description,
@@ -77,7 +63,7 @@ const CategoryHomeBtn = ({
                     border: `1px solid ${withAlpha(theme.bg, 0.4)}`,
                     boxShadow: `0 0px 8px 1px ${withAlpha(theme.bg, 0.15)}`,
                 }}
-                className={`w-full p-4 2xl:p-[30px] rounded-[16px] flex flex-col gap-2 2xl:gap-[15px] bg-white select-none ${
+                className={`w-full p-4 2xl:p-7.5 rounded-2xl flex flex-col gap-2 2xl:gap-3.75 bg-white select-none ${
                     lang === "ar" ? "font-noto" : ""
                 }`}
             >
@@ -107,7 +93,7 @@ const CategoryHomeBtn = ({
                         )}
                     </div>
                 </div>
-                <div className="flex flex-col gap-1 2xl:gap-[5px]">
+                <div className="flex flex-col gap-1 2xl:gap-1.25">
                     <h1
                         style={{ color: theme.text }}
                         className={`text-2xl 2xl:text-[35px] ${
