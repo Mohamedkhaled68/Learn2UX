@@ -1,9 +1,6 @@
 import SearchBar from "@/components/SearchBar";
 import QuestionsList from "@/components/QuestionsList";
-import { getDictionary } from "../dictionaries";
 import Link from "next/link";
-import { Question } from "@/types/Question";
-import { Category } from "@/types/Category";
 import toast from "react-hot-toast";
 import { createClient } from "@/lib/supabase/server";
 
@@ -35,18 +32,14 @@ export default async function page({
     params: Promise<{ lang: "en" | "ar"; title: string }>;
 }) {
     const { lang, title: categoryId } = await params;
-    const dictionary = await getDictionary(lang);
     const category = await getCategoryById(categoryId);
 
-    console.log(categoryId);
 
     const supabase = await createClient();
     const { data: questions } = await supabase
         .from("questions")
         .select("*")
         .order("created_at", { ascending: false });
-
-    console.log(questions);
 
     // Filter questions by category ID
     const categoryQuestions = questions?.filter(

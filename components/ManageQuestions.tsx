@@ -23,8 +23,6 @@ const ManageQuestions: React.FC = () => {
         null,
     );
 
-    console.log(hookCategories);
-
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [filterCategory, setFilterCategory] = useState<string>("");
@@ -86,8 +84,6 @@ const ManageQuestions: React.FC = () => {
     // Handle edit button click
     const handleEditClick = (question: Question) => {
         setSelectedQuestion(question);
-        console.log(question);
-
         setFormData({
             categoryId: question.category_id,
             questionEn: question.question_en,
