@@ -262,7 +262,7 @@ const ManageCategories: React.FC = () => {
 
             // Update category in database
             const { error: updateError } = await supabase
-                .from("categories_with_count")
+                .from("categories")
                 .update({
                     title_en: formData.titleEn,
                     title_ar: formData.titleAr,
